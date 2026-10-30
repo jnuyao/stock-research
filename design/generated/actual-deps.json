@@ -1,0 +1,158 @@
+{
+  "modules": [
+    {
+      "source": "src/stockdesk/__init__.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/__main__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/cli/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/cli/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/cli/main/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/cli/main.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/earnings/"
+        },
+        {
+          "resolved": "src/stockdesk/report/"
+        },
+        {
+          "resolved": "src/stockdesk/shared/calendar/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/earnings/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/earnings/pack/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/earnings/pack.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/qa/"
+        },
+        {
+          "resolved": "src/stockdesk/shared/fields/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/qa/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/qa/gate/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/qa/gate.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/errors/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/report/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/models/"
+        },
+        {
+          "resolved": "src/stockdesk/report/archive/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/report/archive.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/models/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/report/notes.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/report/numbers.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/models/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/report/render.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/fields/"
+        },
+        {
+          "resolved": "src/stockdesk/report/notes/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/report/review.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/calendar/"
+        },
+        {
+          "resolved": "src/stockdesk/report/notes/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/report/style.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/shared/__init__.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/shared/calendar.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/shared/errors.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/shared/fields.py",
+      "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/shared/fmt.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/models/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/shared/models.py",
+      "dependencies": []
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+[
+ {
+  "ticker": "INTC",
+  "field": "cons_revenue",
+  "period": "2026Q3",
+  "value": 16470000000.0,
+  "unit": "USD",
+  "source_url": "https://247wallst.com/investing/2026/10/29/live-will-intels-q3-earnings-tonight-spark-a-recovery-after-20-selloff/",
+  "as_of": "2026-10-29",
+  "fetched_at": "2026-10-30T09:25:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "INTC",
+  "field": "cons_eps_nongaap",
+  "period": "2026Q3",
+  "value": 0.4,
+  "unit": "USD/share",
+  "source_url": "https://247wallst.com/investing/2026/10/29/live-will-intels-q3-earnings-tonight-spark-a-recovery-after-20-selloff/",
+  "as_of": "2026-10-29",
+  "fetched_at": "2026-10-30T09:25:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "INTC",
+  "field": "cons_revenue",
+  "period": "2026Q4",
+  "value": 17080000000.0,
+  "unit": "USD",
+  "source_url": "https://finance.biggo.com/news/f434babc-b0c7-4779-a698-22580eb46b59",
+  "as_of": "2026-10-29",
+  "fetched_at": "2026-10-30T09:25:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "INTC",
+  "field": "cons_eps_nongaap",
+  "period": "2026Q4",
+  "value": 0.44,
+  "unit": "USD/share",
+  "source_url": "https://finance.biggo.com/news/f434babc-b0c7-4779-a698-22580eb46b59",
+  "as_of": "2026-10-29",
+  "fetched_at": "2026-10-30T09:25:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "INTC",
+  "field": "cons_gm_nongaap",
+  "period": "2026Q4",
+  "value": 0.428,
+  "unit": "ratio",
+  "source_url": "https://investinglive.com/stocks/intel-beats-q3-profit-forecasts-but-weak-q4-guidance-and-pc-outlook-weigh-share-price-drops/",
+  "as_of": "2026-10-29",
+  "fetched_at": "2026-10-30T09:25:00Z",
+  "via": "import"
+ }
+]
