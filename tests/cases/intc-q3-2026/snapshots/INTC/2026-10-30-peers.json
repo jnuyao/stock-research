@@ -1,0 +1,14 @@
+[
+ {
+  "ticker": "INTC",
+  "field": "peer_pe.AMD",
+  "period": "2026-10-27",
+  "value": 50.06,
+  "unit": "x",
+  "source_url": "https://stockanalysis.com/stocks/amd/statistics/",
+  "as_of": "2026-10-27",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "AMD 前瞻市盈率（10-27 盘中）"
+ }
+]

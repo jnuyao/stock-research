@@ -4,6 +4,10 @@
  "as_of": "2026-10-29",
  "market": "US",
  "notes": "notes/ok.md",
- "description": "英特尔 2026 年第三季度财报（2026-10-29 盘后发布）。公司数字取自英特尔新闻稿，2026-10-30 对照 StockTitan 全文转载核对；一致预期取自财报前报道；收盘价取自 MoneyCheck。",
- "cross_check_url": "https://www.stocktitan.net/news/INTC/intel-reports-third-quarter-2026-financial-45kjlqvhkaar.html"
+ "description": "英特尔 2026 年第三季度财报（2026-10-29 盘后发布）。公司数字取自英特尔新闻稿，2026-10-30 对照 StockTitan 全文转载核对；一致预期取自财报前报道；收盘价取自 MoneyCheck。日线取自 Yahoo Finance（在你的 Mac 上取），盘后价取自 MoneyCheck，历史 PE 取自 stockanalysis。",
+ "cross_check_url": "https://www.stocktitan.net/news/INTC/intel-reports-third-quarter-2026-financial-45kjlqvhkaar.html",
+ "earnings": {
+  "date": "2026-10-29",
+  "timing": "after_close"
+ }
 }

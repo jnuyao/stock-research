@@ -1,0 +1,24 @@
+{
+ "source": "2026-10-29 发给你的 INTC 财报解读页（https://claude.ai/artifact/K6yzP5mm8Sy3JS2vutvxp8）",
+ "eps": 1.75,
+ "pe": [
+  38,
+  45
+ ],
+ "tiers": {
+  "A": [
+   70,
+   74
+  ],
+  "B": [
+   60,
+   64
+  ],
+  "C": [
+   48,
+   52
+  ]
+ },
+ "invalidation": 45,
+ "accepted_deviations": []
+}

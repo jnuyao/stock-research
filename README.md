@@ -2,7 +2,7 @@
 
 给一个人用的美股和港股研究工作台：取数（带来源）→ 财报包 → Claude 写解读和假设 → 规则算三档买点和失效位 → 报告 → 观察清单 → 每周五复盘提醒。不构成投资建议。
 
-当前进度：**蓝图 0.3，切片 1 完成**（INTC 财报包回放到报告，不联网）。下一步是切片 2（三档买点和数据守门）。
+当前进度：**蓝图 0.3，切片 2 完成**（INTC、GOOGL、联想 0992 三个案例回放：财报包、三档买点、数据守门，不联网）。下一步是切片 3（接真实数据）。
 
 ## 跑起来
 
@@ -12,6 +12,7 @@
 python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
 make check   # 代码检查、测试、架构检查、图文一致检查
 make demo    # 用 INTC 2026Q3 固定案例跑 财报包 → 自查 → 报告，报告写到 reports/INTC/2026Q3/report.html
+make zones   # 用 INTC 和联想 0992 的固定案例算三档买点
 ```
 
 常用命令（都支持 `--json` 和 `--replay <案例>`）：
@@ -19,7 +20,11 @@ make demo    # 用 INTC 2026Q3 固定案例跑 财报包 → 自查 → 报告�
 ```bash
 .venv/bin/sd pack INTC --quarter 2026Q3 --replay intc-q3-2026
 .venv/bin/sd report INTC --quarter 2026Q3 --replay intc-q3-2026 --notes tests/cases/intc-q3-2026/notes/ok.md
+.venv/bin/sd zones INTC --replay intc-q3-2026 --eps 1.75 --pe 38-45
+.venv/bin/sd zones 0992.HK --replay lenovo-2026-10-29 --eps 2.7 --pe 8-11   # EPS 是美元时加 --eps-currency USD
 ```
+
+买点规则的参数在 `config/rules.toml`，每家公司的口径（GAAP 还是 non-GAAP、有没有指引、分部门名字）在 `config/companies.toml`。
 
 在线审阅页：https://claude.ai/artifact/GVcTSjfggkxm3XiYe9Zf3b （私有，仅本人可见）。本地审阅：用浏览器打开 `design/generated/review.html`。
 

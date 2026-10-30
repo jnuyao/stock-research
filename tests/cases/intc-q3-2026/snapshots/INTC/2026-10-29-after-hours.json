@@ -1,0 +1,14 @@
+[
+ {
+  "ticker": "INTC",
+  "field": "price_after_hours",
+  "period": "2026-10-29",
+  "value": 76.58,
+  "unit": "USD",
+  "source_url": "https://moneycheck.com/intel-intc-shares-drop-16-82-after-hours-despite-16-5-billion-revenue-beat/",
+  "as_of": "2026-10-29",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "盘后跌 16.82%：92.07 × (1 − 0.1682)"
+ }
+]

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from html import escape
 
-from stockdesk.shared.fields import SEGMENT_LABELS
 from stockdesk.shared.fmt import money, show
 from stockdesk.shared.models import EarningsPack, PackItem
 
@@ -149,11 +148,18 @@ def _actual_vs_cons(pack: EarningsPack) -> str:
     return _table(["项目", "实际", "同比", "一致预期", "相对预期", "判定"], rows)
 
 
+def _segment_name(pack: EarningsPack, seg: str) -> str:
+    for it in pack.items:
+        if it.key.startswith(f"segment.{seg}."):
+            return it.label.rsplit(" ", 1)[0]
+    return seg
+
+
 def _segments(pack: EarningsPack) -> str:
     segs = sorted({it.key.split(".")[1] for it in pack.items if it.key.startswith("segment.")})
     if not segs:
         return '<p class="missing">新闻稿没有分部门数据。</p>'
-    rows = [[escape(SEGMENT_LABELS.get(s, s)), _num(pack, f"segment.{s}.revenue"),
+    rows = [[escape(_segment_name(pack, s)), _num(pack, f"segment.{s}.revenue"),
              f'<span class="{_tone(pack, f"segment.{s}.revenue_yoy")}">{_num(pack, f"segment.{s}.revenue_yoy")}</span>',
              f'<span class="{_tone(pack, f"segment.{s}.op_income")}">{_num(pack, f"segment.{s}.op_income")}</span>']
             for s in segs]

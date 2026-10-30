@@ -1,0 +1,11 @@
+{
+ "ticker": "0992.HK",
+ "quarter": "FY2027Q1",
+ "as_of": "2026-10-28",
+ "market": "HK",
+ "earnings": {
+  "date": "2026-08-13",
+  "timing": "after_close"
+ },
+ "description": "联想集团 2026/27 财年第一季度（截至 2026-06-30）。业绩数字取自披露易公告，分部门取自联想新闻稿，历史 PE 取自 stockanalysis，日线和汇率取自 Yahoo Finance。数据截至 2026-10-28。"
+}

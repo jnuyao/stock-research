@@ -1,0 +1,27 @@
+# 公司档案：决定财报包要哪些字段、按什么口径对照预期、用什么货币。
+# 没列出的美股按默认处理：一致预期对照非 GAAP EPS，要求季度指引和毛利率。
+# 没列出的港股（代码以 .HK 结尾）默认：港元股价、港元财报、不要求指引，一致预期为非关键字段。
+
+[INTC]
+name = "英特尔"
+eps_basis = "nongaap"
+guidance = true
+segments = { CCPG = "PC 与实体 AI（CCPG）", DCAI = "数据中心与 AI（DCAI）", FOUNDRY = "代工", OTHER = "其他" }
+
+[GOOGL]
+name = "Alphabet"
+eps_basis = "gaap"      # 只报 GAAP EPS，一致预期也按 GAAP 对照
+guidance = false        # 不给季度数字指引
+gross_margin = false    # 新闻稿不单列毛利率
+segments = { SEARCH = "搜索及其他", YOUTUBE = "YouTube 广告", SUBS = "订阅、平台与设备", CLOUD = "Google Cloud" }
+kpis = { cloud_backlog = "云积压订单" }
+
+["0992.HK"]
+name = "联想集团"
+market = "HK"
+price_currency = "HKD"
+report_currency = "USD"   # 财报是美元，股价是港元，估值时要换汇率
+eps_basis = "gaap"        # 联想不报经调整 EPS
+guidance = false
+consensus_critical = false
+segments = { IDG = "智能设备（IDG）", ISG = "基础设施方案（ISG）", SSG = "方案服务（SSG）" }

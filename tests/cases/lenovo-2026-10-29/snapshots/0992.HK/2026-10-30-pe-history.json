@@ -1,0 +1,50 @@
+[
+ {
+  "ticker": "0992.HK",
+  "field": "pe_fwd",
+  "period": "2024-03-31",
+  "value": 12.21,
+  "unit": "x",
+  "source_url": "https://stockanalysis.com/quote/hkg/0992/financials/ratios/",
+  "as_of": "2024-03-31",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "stockanalysis 港股比率页的 Forward PE（港元口径）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "pe_fwd",
+  "period": "2025-03-31",
+  "value": 12.42,
+  "unit": "x",
+  "source_url": "https://stockanalysis.com/quote/hkg/0992/financials/ratios/",
+  "as_of": "2025-03-31",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "stockanalysis 港股比率页的 Forward PE（港元口径）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "pe_fwd",
+  "period": "2026-03-31",
+  "value": 12.06,
+  "unit": "x",
+  "source_url": "https://stockanalysis.com/quote/hkg/0992/financials/ratios/",
+  "as_of": "2026-03-31",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "stockanalysis 港股比率页的 Forward PE（港元口径）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "pe_fwd",
+  "period": "2026-08-21",
+  "value": 9.78,
+  "unit": "x",
+  "source_url": "https://stockanalysis.com/quote/hkg/0992/financials/ratios/",
+  "as_of": "2026-08-21",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "stockanalysis 港股比率页的 Forward PE（港元口径）"
+ }
+]

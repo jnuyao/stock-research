@@ -1,0 +1,14 @@
+[
+ {
+  "ticker": "GOOGL",
+  "field": "kpi.cloud_backlog",
+  "period": "2026Q3",
+  "value": 561000000000.0,
+  "unit": "USD",
+  "source_url": "https://www.investing.com/news/transcripts/earnings-call-transcript-alphabet-q3-2026-profit-miss-sparks-10-afterhours-drop-93CH-4981037",
+  "as_of": "2026-09-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "电话会：Google Cloud's backlog was $561 billion in the third quarter"
+ }
+]

@@ -31,8 +31,18 @@
         },
         {
           "resolved": "src/stockdesk/shared/calendar/"
+        },
+        {
+          "resolved": "src/stockdesk/zones/"
+        },
+        {
+          "resolved": "src/stockdesk/cli/zones_view/"
         }
       ]
+    },
+    {
+      "source": "src/stockdesk/cli/zones_view.py",
+      "dependencies": []
     },
     {
       "source": "src/stockdesk/earnings/__init__.py",
@@ -65,7 +75,7 @@
       "source": "src/stockdesk/qa/gate.py",
       "dependencies": [
         {
-          "resolved": "src/stockdesk/shared/errors/"
+          "resolved": "src/stockdesk/shared/calendar/"
         }
       ]
     },
@@ -104,7 +114,7 @@
       "source": "src/stockdesk/report/render.py",
       "dependencies": [
         {
-          "resolved": "src/stockdesk/shared/fields/"
+          "resolved": "src/stockdesk/shared/fmt/"
         },
         {
           "resolved": "src/stockdesk/report/notes/"
@@ -132,7 +142,11 @@
     },
     {
       "source": "src/stockdesk/shared/calendar.py",
-      "dependencies": []
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/shared/errors/"
+        }
+      ]
     },
     {
       "source": "src/stockdesk/shared/errors.py",
@@ -153,6 +167,63 @@
     {
       "source": "src/stockdesk/shared/models.py",
       "dependencies": []
+    },
+    {
+      "source": "src/stockdesk/technicals/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/technicals/levels/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/technicals/levels.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/qa/"
+        },
+        {
+          "resolved": "src/stockdesk/shared/calendar/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/valuation/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/valuation/value/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/valuation/value.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/qa/"
+        },
+        {
+          "resolved": "src/stockdesk/shared/calendar/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/zones/__init__.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/zones/plan/"
+        }
+      ]
+    },
+    {
+      "source": "src/stockdesk/zones/plan.py",
+      "dependencies": [
+        {
+          "resolved": "src/stockdesk/technicals/"
+        },
+        {
+          "resolved": "src/stockdesk/valuation/"
+        }
+      ]
     }
   ]
 }

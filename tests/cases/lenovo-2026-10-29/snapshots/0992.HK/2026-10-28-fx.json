@@ -1,0 +1,14 @@
+[
+ {
+  "ticker": "0992.HK",
+  "field": "fx.USDHKD",
+  "period": "2026-10-28",
+  "value": 7.8444,
+  "unit": "HKD/USD",
+  "source_url": "https://finance.yahoo.com/quote/USDHKD=X/history/",
+  "as_of": "2026-10-28",
+  "fetched_at": "2026-10-30T10:01:38Z",
+  "via": "import",
+  "note": "yfinance USDHKD=X 收盘（伦敦时间日期）"
+ }
+]

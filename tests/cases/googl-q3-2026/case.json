@@ -1,0 +1,11 @@
+{
+ "ticker": "GOOGL",
+ "quarter": "2026Q3",
+ "as_of": "2026-10-28",
+ "market": "US",
+ "earnings": {
+  "date": "2026-10-28",
+  "timing": "after_close"
+ },
+ "description": "Alphabet 2026 年第三季度财报（2026-10-28 盘后发布）。公司数字取自新闻稿 PDF，云积压订单取自电话会纪要，一致预期取自 TheStreet，日线取自 Yahoo Finance。"
+}
