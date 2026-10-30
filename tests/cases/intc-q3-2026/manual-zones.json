@@ -20,5 +20,20 @@
   ]
  },
  "invalidation": 45,
- "accepted_deviations": []
+ "accepted_deviations": [
+  {
+   "tier": "B",
+   "rule": [
+    64.5,
+    68.5
+   ],
+   "manual": [
+    60,
+    64
+   ],
+   "date": "2026-10-30",
+   "accepted_by": "yaohom",
+   "reason": "人工版 B 档 60–64 是按 4 月的月度涨幅估的，隐含约 35 倍，低于同一份分析给的 PE 区间下沿 38 倍；规则取估值区间下沿 1.75 × 38 = 66.5 作锚点，与假设一致。用户在项目对话里选择以规则为准。"
+  }
+ ]
 }

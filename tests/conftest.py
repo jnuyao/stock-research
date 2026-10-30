@@ -63,11 +63,12 @@ def edit_json(path: Path, fn) -> None:
 
 
 TOLERANCE = 0.05  # 与人工版本对照的允许偏差（AT-3、AT-12）
+ACCEPTED_DRIFT = 0.005  # 认可过的偏差，规则结果再变动超过这个比例就要重新确认
 
 
 def compare_with_manual(plan: dict, manual: dict) -> list[str]:
     """逐档对照人工版本，返回超出 5% 且没被你认可的差异（带原因）。"""
-    accepted = {d["tier"] for d in manual.get("accepted_deviations", [])}
+    accepted = {d["tier"]: d for d in manual.get("accepted_deviations", [])}
     ours = {t["name"]: t for t in plan["tiers"]}
     problems = []
     for name, (lo, hi) in manual["tiers"].items():
@@ -76,10 +77,21 @@ def compare_with_manual(plan: dict, manual: dict) -> list[str]:
             problems.append(f"{name} 档：规则没有给出这一档（{plan.get('reserved', {}).get('reason', '')}）")
             continue
         dev = max(abs(t["low"] - lo) / lo, abs(t["high"] - hi) / hi)
-        if dev > TOLERANCE and name not in accepted:
+        if dev <= TOLERANCE:
+            continue
+        ok = accepted.get(name)
+        if ok is None:
             problems.append(
                 f"{name} 档：规则 {t['low']:.2f}–{t['high']:.2f}，人工 {lo}–{hi}，偏差 {dev:.1%}；"
                 f"规则锚点 {t['anchor']['label']} {t['anchor']['value']:.2f}"
+            )
+            continue
+        # 认可的是当时规则给出的那个具体区间；规则结果再变，要重新确认
+        rlo, rhi = ok["rule"]
+        if max(abs(t["low"] - rlo) / rlo, abs(t["high"] - rhi) / rhi) > ACCEPTED_DRIFT:
+            problems.append(
+                f"{name} 档：认可过的规则结果是 {rlo}–{rhi}（{ok['date']}），现在变成 "
+                f"{t['low']:.2f}–{t['high']:.2f}，需要重新确认"
             )
     inv = plan["invalidation"]["level"]
     dev = abs(inv - manual["invalidation"]) / manual["invalidation"]
