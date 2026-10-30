@@ -1,0 +1,1409 @@
+{
+ "title": "股票研究台施工蓝图",
+ "eyebrow": "美股与港股 · 财报解读与分档买点",
+ "flowName": "研究流程",
+ "drawingNo": "STOCK-ARCH-001",
+ "version": "0.3",
+ "note": "这是架构图的唯一事实来源。审阅页、Mermaid 图、架构检查都从这里生成或读取；SPEC.md 必须与这里一致。箭头方向 = 调用方 → 被调用方。",
+ "canvas": {
+  "w": 1000,
+  "h": 670
+ },
+ "arch": {
+  "tool": "python",
+  "command": "make arch",
+  "srcRoot": "src/",
+  "package": "stockdesk",
+  "external": [
+   "examples/"
+  ]
+ },
+ "sharedDirs": {
+  "host": "src/stockdesk/shared/"
+ },
+ "entryFiles": {
+  "src/stockdesk/__init__.py": [],
+  "src/stockdesk/__main__.py": [
+   "CLI"
+  ]
+ },
+ "layers": [
+  {
+   "id": "entry",
+   "name": "入口",
+   "color": "shell"
+  },
+  {
+   "id": "skill",
+   "name": "Claude 技能",
+   "color": "skill"
+  },
+  {
+   "id": "cli",
+   "name": "命令行",
+   "color": "platform"
+  },
+  {
+   "id": "data",
+   "name": "数据网关",
+   "color": "api"
+  },
+  {
+   "id": "guard",
+   "name": "数据守门",
+   "color": "security"
+  },
+  {
+   "id": "core",
+   "name": "分析内核",
+   "color": "agent"
+  },
+  {
+   "id": "store",
+   "name": "本机文件",
+   "color": "store"
+  },
+  {
+   "id": "resource",
+   "name": "外部来源",
+   "color": "resource"
+  }
+ ],
+ "edgeKinds": [
+  {
+   "id": "call",
+   "name": "代码调用",
+   "guard": "arch"
+  },
+  {
+   "id": "load",
+   "name": "读写本机文件",
+   "guard": "test"
+  },
+  {
+   "id": "spawn",
+   "name": "启动会话或命令",
+   "guard": "test"
+  },
+  {
+   "id": "external",
+   "name": "访问外部系统",
+   "guard": "test"
+  }
+ ],
+ "regions": [
+  {
+   "id": "sources",
+   "name": "外部数据来源",
+   "x": 10,
+   "y": 112,
+   "w": 226,
+   "h": 336
+  },
+  {
+   "id": "kernel",
+   "name": "分析内核",
+   "x": 385,
+   "y": 206,
+   "w": 590,
+   "h": 288
+  }
+ ],
+ "labels": [
+  {
+   "text": "存储",
+   "x": 20,
+   "y": 620
+  },
+  {
+   "text": "所有分析只读快照，可回放",
+   "x": 20,
+   "y": 638,
+   "small": true
+  }
+ ],
+ "modules": [
+  {
+   "id": "R-OUT",
+   "name": "Claude 项目",
+   "sub": "报告页 · 提醒消息",
+   "layer": "resource",
+   "owner": "Claude",
+   "code": false,
+   "box": {
+    "x": 20,
+    "y": 40,
+    "w": 280,
+    "h": 60
+   }
+  },
+  {
+   "id": "SKILL",
+   "name": "Claude 技能",
+   "sub": "财报前预案 · 财报解读 · 买点 · 周五复盘",
+   "layer": "skill",
+   "owner": "本项目",
+   "code": false,
+   "box": {
+    "x": 340,
+    "y": 40,
+    "w": 380,
+    "h": 60
+   }
+  },
+  {
+   "id": "SCHED",
+   "name": "定时任务",
+   "sub": "周五收盘后 · 财报前 3 天 · 财报次日",
+   "layer": "entry",
+   "owner": "你",
+   "code": false,
+   "box": {
+    "x": 760,
+    "y": 40,
+    "w": 200,
+    "h": 60
+   }
+  },
+  {
+   "id": "CLI",
+   "name": "命令行 sd",
+   "sub": "预检 · 取数 · 预案 · 财报包 · 买点 · 清单 · 复盘 · 报告",
+   "layer": "cli",
+   "owner": "本项目",
+   "dir": "src/stockdesk/cli/",
+   "code": true,
+   "box": {
+    "x": 340,
+    "y": 150,
+    "w": 620,
+    "h": 44
+   }
+  },
+  {
+   "id": "R-WEB",
+   "name": "公开网页",
+   "sub": "云端 WebFetch：行情 · 公告 · IR",
+   "layer": "resource",
+   "owner": "第三方",
+   "code": false,
+   "box": {
+    "x": 20,
+    "y": 150,
+    "w": 205,
+    "h": 50
+   }
+  },
+  {
+   "id": "R-MKT",
+   "name": "行情与预期接口",
+   "sub": "yfinance · AKShare",
+   "layer": "resource",
+   "owner": "第三方",
+   "code": false,
+   "box": {
+    "x": 20,
+    "y": 210,
+    "w": 205,
+    "h": 50
+   }
+  },
+  {
+   "id": "R-SEC",
+   "name": "SEC EDGAR",
+   "sub": "8-K · 10-Q · XBRL",
+   "layer": "resource",
+   "owner": "美国证监会",
+   "code": false,
+   "box": {
+    "x": 20,
+    "y": 270,
+    "w": 205,
+    "h": 50
+   }
+  },
+  {
+   "id": "R-HKEX",
+   "name": "港交所披露易",
+   "sub": "业绩公告 · 年报中报",
+   "layer": "resource",
+   "owner": "港交所",
+   "code": false,
+   "box": {
+    "x": 20,
+    "y": 330,
+    "w": 205,
+    "h": 50
+   }
+  },
+  {
+   "id": "R-MACRO",
+   "name": "宏观数据",
+   "sub": "FRED 利率 · VIX · 汇率",
+   "layer": "resource",
+   "owner": "第三方",
+   "code": false,
+   "box": {
+    "x": 20,
+    "y": 390,
+    "w": 205,
+    "h": 50
+   }
+  },
+  {
+   "id": "DATA",
+   "name": "数据网关",
+   "sub": "来源登记 · 网络预检 · 抓取 · 导入",
+   "layer": "data",
+   "owner": "本项目",
+   "dir": "src/stockdesk/data/",
+   "code": true,
+   "box": {
+    "x": 20,
+    "y": 470,
+    "w": 280,
+    "h": 56
+   }
+  },
+  {
+   "id": "EARN",
+   "name": "财报包",
+   "sub": "预案 · 实际 vs 预期",
+   "layer": "core",
+   "owner": "本项目",
+   "dir": "src/stockdesk/earnings/",
+   "code": true,
+   "box": {
+    "x": 400,
+    "y": 246,
+    "w": 130,
+    "h": 56
+   }
+  },
+  {
+   "id": "ZONES",
+   "name": "买点规则",
+   "sub": "三档 · 右侧 · 失效位",
+   "layer": "core",
+   "owner": "本项目",
+   "dir": "src/stockdesk/zones/",
+   "code": true,
+   "box": {
+    "x": 550,
+    "y": 246,
+    "w": 130,
+    "h": 56
+   }
+  },
+  {
+   "id": "WATCH",
+   "name": "观察清单",
+   "sub": "保存买点 · 周五复盘",
+   "layer": "core",
+   "owner": "本项目",
+   "dir": "src/stockdesk/watch/",
+   "code": true,
+   "box": {
+    "x": 700,
+    "y": 246,
+    "w": 120,
+    "h": 56
+   }
+  },
+  {
+   "id": "REPORT",
+   "name": "报告",
+   "sub": "出报告前自查",
+   "layer": "core",
+   "owner": "本项目",
+   "dir": "src/stockdesk/report/",
+   "code": true,
+   "box": {
+    "x": 840,
+    "y": 246,
+    "w": 120,
+    "h": 56
+   }
+  },
+  {
+   "id": "VAL",
+   "name": "估值",
+   "sub": "PE 区间 · 分位",
+   "layer": "core",
+   "owner": "本项目",
+   "dir": "src/stockdesk/valuation/",
+   "code": true,
+   "box": {
+    "x": 512,
+    "y": 336,
+    "w": 118,
+    "h": 56
+   }
+  },
+  {
+   "id": "TECH",
+   "name": "技术位",
+   "sub": "均线 · 支撑 · 回撤",
+   "layer": "core",
+   "owner": "本项目",
+   "dir": "src/stockdesk/technicals/",
+   "code": true,
+   "box": {
+    "x": 640,
+    "y": 336,
+    "w": 118,
+    "h": 56
+   }
+  },
+  {
+   "id": "QA",
+   "name": "数据守门",
+   "sub": "覆盖率 · 时效 · 缺口清单",
+   "layer": "guard",
+   "owner": "本项目",
+   "dir": "src/stockdesk/qa/",
+   "code": true,
+   "box": {
+    "x": 400,
+    "y": 430,
+    "w": 380,
+    "h": 48
+   }
+  },
+  {
+   "id": "ST-SNAP",
+   "name": "数据快照",
+   "sub": "data/snapshots/",
+   "layer": "store",
+   "owner": "本机文件",
+   "code": false,
+   "box": {
+    "x": 200,
+    "y": 590,
+    "w": 190,
+    "h": 50
+   }
+  },
+  {
+   "id": "ST-WATCH",
+   "name": "观察清单文件",
+   "sub": "data/watchlist.csv",
+   "layer": "store",
+   "owner": "本机文件",
+   "code": false,
+   "box": {
+    "x": 600,
+    "y": 590,
+    "w": 170,
+    "h": 50
+   }
+  },
+  {
+   "id": "ST-REPORT",
+   "name": "报告归档",
+   "sub": "reports/代码/季度/",
+   "layer": "store",
+   "owner": "本机文件",
+   "code": false,
+   "box": {
+    "x": 800,
+    "y": 590,
+    "w": 170,
+    "h": 50
+   }
+  }
+ ],
+ "edges": [
+  {
+   "id": "E1",
+   "from": "SCHED",
+   "to": "SKILL",
+   "kind": "spawn",
+   "label": "按时间启动一个 Claude 会话，跑 weekly-check 或 earnings-review",
+   "path": [
+    [
+     760,
+     70
+    ],
+    [
+     720,
+     70
+    ]
+   ]
+  },
+  {
+   "id": "E2",
+   "from": "SKILL",
+   "to": "CLI",
+   "kind": "spawn",
+   "label": "运行 sd 命令，读取 JSON 输出",
+   "path": [
+    [
+     530,
+     100
+    ],
+    [
+     530,
+     150
+    ]
+   ]
+  },
+  {
+   "id": "E3",
+   "from": "SKILL",
+   "to": "R-WEB",
+   "kind": "external",
+   "label": "云端：用 WebFetch 抓行情、预期、财报公告、电话会实录或 IR 演示材料",
+   "path": [
+    [
+     360,
+     100
+    ],
+    [
+     360,
+     107
+    ],
+    [
+     120,
+     107
+    ],
+    [
+     120,
+     150
+    ]
+   ]
+  },
+  {
+   "id": "E4",
+   "from": "SKILL",
+   "to": "R-OUT",
+   "kind": "external",
+   "label": "发布报告页；有提醒时在项目里发消息",
+   "path": [
+    [
+     340,
+     70
+    ],
+    [
+     300,
+     70
+    ]
+   ]
+  },
+  {
+   "id": "E5",
+   "from": "CLI",
+   "to": "DATA",
+   "kind": "call",
+   "label": "fetch 抓取 / import 导入网页数据",
+   "path": [
+    [
+     360,
+     194
+    ],
+    [
+     360,
+     498
+    ],
+    [
+     300,
+     498
+    ]
+   ]
+  },
+  {
+   "id": "E6",
+   "from": "CLI",
+   "to": "EARN",
+   "kind": "call",
+   "label": "pack：组装财报包",
+   "path": [
+    [
+     465,
+     194
+    ],
+    [
+     465,
+     246
+    ]
+   ]
+  },
+  {
+   "id": "E7",
+   "from": "CLI",
+   "to": "ZONES",
+   "kind": "call",
+   "label": "zones：按输入假设算三档",
+   "path": [
+    [
+     615,
+     194
+    ],
+    [
+     615,
+     246
+    ]
+   ]
+  },
+  {
+   "id": "E8",
+   "from": "CLI",
+   "to": "WATCH",
+   "kind": "call",
+   "label": "watch 保存买点 / check 周五复盘",
+   "path": [
+    [
+     760,
+     194
+    ],
+    [
+     760,
+     246
+    ]
+   ]
+  },
+  {
+   "id": "E9",
+   "from": "CLI",
+   "to": "REPORT",
+   "kind": "call",
+   "label": "report：分析包 + Claude 的解读 → HTML",
+   "path": [
+    [
+     900,
+     194
+    ],
+    [
+     900,
+     246
+    ]
+   ]
+  },
+  {
+   "id": "E10",
+   "from": "DATA",
+   "to": "R-MKT",
+   "kind": "external",
+   "label": "Mac：美股和港股价格、历史、一致预期",
+   "path": [
+    [
+     284,
+     470
+    ],
+    [
+     284,
+     235
+    ],
+    [
+     225,
+     235
+    ]
+   ]
+  },
+  {
+   "id": "E11",
+   "from": "DATA",
+   "to": "R-SEC",
+   "kind": "external",
+   "label": "Mac：8-K 附件、XBRL 三表",
+   "path": [
+    [
+     266,
+     470
+    ],
+    [
+     266,
+     295
+    ],
+    [
+     225,
+     295
+    ]
+   ]
+  },
+  {
+   "id": "E12",
+   "from": "DATA",
+   "to": "R-MACRO",
+   "kind": "external",
+   "label": "Mac：10 年期利率、VIX、信用利差、美元兑港元",
+   "path": [
+    [
+     130,
+     470
+    ],
+    [
+     130,
+     440
+    ]
+   ]
+  },
+  {
+   "id": "E13",
+   "from": "DATA",
+   "to": "ST-SNAP",
+   "kind": "load",
+   "label": "写入带来源和时间的快照",
+   "path": [
+    [
+     240,
+     526
+    ],
+    [
+     240,
+     590
+    ]
+   ]
+  },
+  {
+   "id": "E14",
+   "from": "EARN",
+   "to": "QA",
+   "kind": "call",
+   "label": "取财报、预期、指引字段",
+   "path": [
+    [
+     465,
+     302
+    ],
+    [
+     465,
+     430
+    ]
+   ]
+  },
+  {
+   "id": "E15",
+   "from": "ZONES",
+   "to": "VAL",
+   "kind": "call",
+   "label": "合理 PE 区间对应的价格",
+   "path": [
+    [
+     580,
+     302
+    ],
+    [
+     580,
+     336
+    ]
+   ]
+  },
+  {
+   "id": "E16",
+   "from": "ZONES",
+   "to": "TECH",
+   "kind": "call",
+   "label": "均线、多次测试的支撑、52 周高点回撤",
+   "path": [
+    [
+     660,
+     302
+    ],
+    [
+     660,
+     336
+    ]
+   ]
+  },
+  {
+   "id": "E17",
+   "from": "VAL",
+   "to": "QA",
+   "kind": "call",
+   "label": "取 EPS 预期、历史 PE",
+   "path": [
+    [
+     570,
+     392
+    ],
+    [
+     570,
+     430
+    ]
+   ]
+  },
+  {
+   "id": "E18",
+   "from": "TECH",
+   "to": "QA",
+   "kind": "call",
+   "label": "取日线和周线收盘",
+   "path": [
+    [
+     690,
+     392
+    ],
+    [
+     690,
+     430
+    ]
+   ]
+  },
+  {
+   "id": "E19",
+   "from": "WATCH",
+   "to": "QA",
+   "kind": "call",
+   "label": "取最新周收盘和宏观信号",
+   "path": [
+    [
+     772,
+     302
+    ],
+    [
+     772,
+     430
+    ]
+   ]
+  },
+  {
+   "id": "E20",
+   "from": "WATCH",
+   "to": "ST-WATCH",
+   "kind": "load",
+   "label": "读写三档价、失效位、上次状态",
+   "path": [
+    [
+     800,
+     302
+    ],
+    [
+     800,
+     560
+    ],
+    [
+     700,
+     560
+    ],
+    [
+     700,
+     590
+    ]
+   ]
+  },
+  {
+   "id": "E21",
+   "from": "QA",
+   "to": "ST-SNAP",
+   "kind": "load",
+   "label": "读快照，判断能不能用",
+   "path": [
+    [
+     420,
+     478
+    ],
+    [
+     420,
+     560
+    ],
+    [
+     350,
+     560
+    ],
+    [
+     350,
+     590
+    ]
+   ]
+  },
+  {
+   "id": "E22",
+   "from": "REPORT",
+   "to": "ST-REPORT",
+   "kind": "load",
+   "label": "写 HTML 和分析包",
+   "path": [
+    [
+     900,
+     302
+    ],
+    [
+     900,
+     590
+    ]
+   ]
+  },
+  {
+   "id": "E23",
+   "from": "DATA",
+   "to": "R-HKEX",
+   "kind": "external",
+   "label": "Mac：港股业绩公告和定期报告",
+   "path": [
+    [
+     250,
+     470
+    ],
+    [
+     250,
+     355
+    ],
+    [
+     225,
+     355
+    ]
+   ]
+  }
+ ],
+ "flow": [
+  {
+   "n": 1,
+   "title": "你在项目里提问，或定时任务启动会话",
+   "edges": [
+    "E1"
+   ],
+   "badgeEdge": "E1",
+   "detail": [
+    "两种入口走同一套技能：你说“看下 INTC 财报”，Claude 直接跑 earnings-review；每周五美东收盘后和持仓公司财报次日，[SCHED] 自动启动会话跑 weekly-check 或 earnings-review。"
+   ]
+  },
+  {
+   "n": 2,
+   "title": "取数：Mac 直连，云端由 Claude 抓网页再导入",
+   "edges": [
+    "E2",
+    "E5",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E23"
+   ],
+   "badgeEdge": "E5",
+   "detail": [
+    "Mac 上 `sd fetch INTC` 或 `sd fetch 0992.HK` 由 [DATA] 直连来源。云端的 Python 联网被拦（2026-10-30 实测 sec.gov、stockanalysis、FRED、雅虎全部拒绝连接），所以由 [SKILL] 用 WebFetch 抓 [R-WEB] 的网页，把结果存成 JSON，再 `sd import` 交给 [DATA]。",
+    "港股的财报数字以港交所披露易的业绩公告为准；股价是港元，联想这类公司的财报是美元，估值前必须按当日汇率换算。",
+    "两条路写出的快照格式完全一样，每个字段都带来源网址、抓取时间和数据日期。"
+   ],
+   "sequence": {
+    "title": "云端取数：Claude 抓网页，数据网关登记",
+    "participants": [
+     {
+      "id": "SKILL",
+      "name": "Claude"
+     },
+     {
+      "id": "R-WEB",
+      "name": "网页"
+     },
+     {
+      "id": "CLI"
+     },
+     {
+      "id": "DATA"
+     }
+    ],
+    "messages": [
+     {
+      "section": "抓取（云端只能这样）"
+     },
+     {
+      "from": "SKILL",
+      "to": "R-WEB",
+      "kind": "request",
+      "text": "WebFetch 行情页、财报公告",
+      "note": "stockanalysis /history/ · SEC 8-K Ex-99.1 · 披露易公告"
+     },
+     {
+      "from": "R-WEB",
+      "to": "SKILL",
+      "kind": "response",
+      "text": "页面内容"
+     },
+     {
+      "from": "SKILL",
+      "to": "SKILL",
+      "kind": "local",
+      "text": "按模板抽成 JSON",
+      "note": "字段 · 数值 · 来源网址 · 数据日期"
+     },
+     {
+      "section": "登记"
+     },
+     {
+      "from": "SKILL",
+      "to": "CLI",
+      "kind": "spawn",
+      "text": "sd import INTC fetched.json"
+     },
+     {
+      "from": "CLI",
+      "to": "DATA",
+      "kind": "local",
+      "text": "校验字段和单位，补抓取时间"
+     },
+     {
+      "from": "DATA",
+      "to": "DATA",
+      "kind": "local",
+      "text": "写快照",
+      "note": "data/snapshots/INTC/2026-10-30/"
+     }
+    ]
+   }
+  },
+  {
+   "n": 3,
+   "title": "守门：数据不全、过期或打架就不往下走",
+   "edges": [
+    "E21"
+   ],
+   "badgeEdge": "E21",
+   "detail": [
+    "[QA] 是分析内核读数据的唯一通道。它按命令检查必需字段、价格是否晚于上一个交易日收盘、两个来源是否一致；不通过就返回错误码和一份缺口清单（缺哪个字段、建议去哪个来源补），不给结论。",
+    "缺口清单交给 Claude 接管：按清单定点补抓再导入。真的补不到的非关键字段可以登记为“确认拿不到”，报告里显示为缺失，绝不用 0 或默认值顶替；价格、指引这类关键字段不能登记跳过。",
+    "这一步借鉴 UZI-Skill 的数据完整性检查和缺口接管，但改成硬拒绝：UZI 的覆盖率低于 40% 才算严重，所以 INTC 那次 61% 照样出了报告。"
+   ]
+  },
+  {
+   "n": 4,
+   "title": "组装财报包：实际 vs 预期、指引、现金与资本",
+   "edges": [
+    "E6",
+    "E14"
+   ],
+   "badgeEdge": "E6",
+   "detail": [
+    "`sd pack INTC` 输出一份 JSON：营收、GAAP 与 non-GAAP EPS 分开、毛利率、分部门、下季指引 vs 一致预期、自由现金流、capex、回购和增发。一次性项目（如 GOOGL 的 SpaceX 估值损失）单独标出。"
+   ]
+  },
+  {
+   "n": 5,
+   "title": "Claude 读电话会和指引，写判断与 EPS 假设",
+   "edges": [
+    "E3"
+   ],
+   "badgeEdge": "E3",
+   "detail": [
+    "这一步只有 Claude 做：读电话会实录和财报包，写出“市场在担心什么、指引意味着什么”，并给出前瞻 EPS 和合理 PE 的假设。它不算任何价位，价位交给下一步的规则引擎。",
+    "解读里要过四个视角（价值、成长、趋势、宏观），每个视角只能引用财报包里的数字；视角之间有矛盾时把矛盾写出来，不和稀泥。这是 UZI 评委团的轻量版：不投票、不打分。",
+    "解读文件记下它依据的财报包指纹。数据一旦更新，旧解读自动作废，必须重写。这个时效约定来自 UZI 的 agent_review。"
+   ]
+  },
+  {
+   "n": 6,
+   "title": "规则引擎算三档买点和失效位",
+   "edges": [
+    "E7",
+    "E15",
+    "E16",
+    "E17",
+    "E18"
+   ],
+   "badgeEdge": "E7",
+   "detail": [
+    "`sd zones INTC --eps 1.75 --pe 38-45` 把 Claude 的假设和 [VAL]、[TECH] 的价位合起来，按规则出 A/B/C 三档、仓位比例、右侧信号和周收盘失效位，每一档写明锚点（哪条均线、哪个 PE）。"
+   ]
+  },
+  {
+   "n": 7,
+   "title": "自查通过后生成报告，每个数字可追到来源",
+   "edges": [
+    "E9",
+    "E22",
+    "E4"
+   ],
+   "badgeEdge": "E9",
+   "detail": [
+    "`sd report INTC` 先跑一遍机械自查（借鉴 UZI 的 self_review）：解读里的数字都能在分析包里找到；解读对应的是当前数据；三档低于现价且递减；数据截至最近一个交易日；没有“基本面良好、前景广阔、值得关注”这类空话。有一项严重问题就拒绝生成。",
+    "通过后把分析包、三档买点和解读合成 HTML，样式沿用现有的 GOOGL、INTC 财报页，再由 Claude 发布成报告页。"
+   ]
+  },
+  {
+   "n": 8,
+   "title": "买点写入观察清单",
+   "edges": [
+    "E8",
+    "E20"
+   ],
+   "badgeEdge": "E20",
+   "detail": [
+    "`sd watch save INTC` 把三档价、失效位、依据、下次财报日写进 watchlist.csv，旧值留历史，方便复盘“是逻辑变了还是价格变了”。"
+   ]
+  },
+  {
+   "n": 9,
+   "title": "周五复盘：对照三档和失效位，有变化才提醒",
+   "edges": [
+    "E19"
+   ],
+   "badgeEdge": "E19",
+   "detail": [
+    "`sd check` 拿每只股票的最新周收盘对照观察清单，再看宏观信号（10 年期利率、VIX、信用利差）。只有进入某一档、跌破失效位、或信号翻转时才在项目里提醒你；没变化就安静。"
+   ]
+  },
+  {
+   "n": 10,
+   "title": "财报前预案：要盯什么、三种情景各对应哪一档",
+   "edges": [
+    "E6",
+    "E14"
+   ],
+   "badgeEdge": "E14",
+   "detail": [
+    "观察清单里的公司财报前 3 天，`sd preview INTC` 生成预案：一致预期表（每行带来源，拿不到的标“需补充”）、这个行业该盯的指标（如云业务的积压订单和 capex，半导体的毛利率和库存）、乐观/基准/悲观三种情景及触发条件、过去 8 次财报后的股价反应。",
+    "Claude 再把每种情景对应到买点动作，例如“悲观情景跳空到 A 档附近，等 2 个交易日再买”。方法来自 UZI 的 earnings-preview，它本身改编自 Anthropic 的金融插件。"
+   ]
+  }
+ ],
+ "invariants": [
+  {
+   "id": "INV-1",
+   "text": "每个数字都带来源网址和数据日期",
+   "verifiedBy": [
+    "AT-1",
+    "AT-10"
+   ]
+  },
+  {
+   "id": "INV-2",
+   "text": "价格过期就不出买点和复盘结论",
+   "verifiedBy": [
+    "AT-4"
+   ]
+  },
+  {
+   "id": "INV-3",
+   "text": "必需字段不全就不给结论，并说清缺什么",
+   "verifiedBy": [
+    "AT-4"
+   ]
+  },
+  {
+   "id": "INV-4",
+   "text": "两个来源打架时两个值都列出，不悄悄挑一个",
+   "verifiedBy": [
+    "AT-4"
+   ]
+  },
+  {
+   "id": "INV-5",
+   "text": "模型不编数字：价位只由规则引擎算，报告里的数字都能在分析包里找到",
+   "verifiedBy": [
+    "AT-3",
+    "AT-6"
+   ]
+  },
+  {
+   "id": "INV-6",
+   "text": "每一档都有锚点和仓位，失效位按周收盘",
+   "verifiedBy": [
+    "AT-3"
+   ]
+  },
+  {
+   "id": "INV-7",
+   "text": "GAAP 与 non-GAAP 分开，一次性项目单独标出",
+   "verifiedBy": [
+    "AT-2"
+   ]
+  },
+  {
+   "id": "INV-8",
+   "text": "分析内核不联网，只有数据网关和 Claude 技能访问外部",
+   "verifiedBy": [
+    "AT-9"
+   ]
+  },
+  {
+   "id": "INV-9",
+   "text": "不接券商、不下单、不存账户凭据",
+   "verifiedBy": [
+    "AT-9"
+   ]
+  },
+  {
+   "id": "INV-10",
+   "text": "代码只允许图上的调用关系",
+   "verifiedBy": [
+    "AT-9"
+   ]
+  },
+  {
+   "id": "INV-11",
+   "text": "解读必须对应当前数据：数据更新后旧解读作废",
+   "verifiedBy": [
+    "AT-6"
+   ]
+  },
+  {
+   "id": "INV-13",
+   "text": "股价货币与财报货币不同时，估值前必须按当日汇率换算",
+   "verifiedBy": [
+    "AT-12"
+   ]
+  },
+  {
+   "id": "INV-12",
+   "text": "补不到的数据显示为缺失，不用默认值顶替；关键字段不能跳过",
+   "verifiedBy": [
+    "AT-4"
+   ]
+  }
+ ],
+ "acceptance": [
+  {
+   "id": "AT-1",
+   "name": "INTC Q3'26 财报包回放",
+   "flowSteps": [
+    3,
+    4
+   ],
+   "covers": [
+    "CLI",
+    "EARN",
+    "QA",
+    "ST-SNAP"
+   ]
+  },
+  {
+   "id": "AT-2",
+   "name": "GOOGL Q3'26 一次性项目",
+   "flowSteps": [
+    4
+   ],
+   "covers": [
+    "EARN",
+    "QA"
+   ]
+  },
+  {
+   "id": "AT-3",
+   "name": "INTC 三档买点回放",
+   "flowSteps": [
+    6
+   ],
+   "covers": [
+    "CLI",
+    "ZONES",
+    "VAL",
+    "TECH",
+    "QA"
+   ]
+  },
+  {
+   "id": "AT-4",
+   "name": "数据守门：拒绝与缺口接管",
+   "flowSteps": [
+    3,
+    6
+   ],
+   "covers": [
+    "CLI",
+    "QA",
+    "ZONES"
+   ]
+  },
+  {
+   "id": "AT-5",
+   "name": "云端技能端到端（WebFetch 导入）",
+   "flowSteps": [
+    2,
+    5
+   ],
+   "covers": [
+    "SKILL",
+    "CLI",
+    "DATA",
+    "R-WEB",
+    "R-OUT"
+   ]
+  },
+  {
+   "id": "AT-6",
+   "name": "出报告前自查",
+   "flowSteps": [
+    7
+   ],
+   "covers": [
+    "CLI",
+    "REPORT",
+    "ST-REPORT"
+   ]
+  },
+  {
+   "id": "AT-7",
+   "name": "观察清单与周五复盘",
+   "flowSteps": [
+    8,
+    9
+   ],
+   "covers": [
+    "CLI",
+    "WATCH",
+    "ST-WATCH",
+    "QA"
+   ]
+  },
+  {
+   "id": "AT-8",
+   "name": "定时触发只在有变化时提醒",
+   "flowSteps": [
+    1,
+    9
+   ],
+   "covers": [
+    "SCHED",
+    "SKILL",
+    "R-OUT"
+   ]
+  },
+  {
+   "id": "AT-9",
+   "name": "代码与架构图一致、内核不联网",
+   "flowSteps": [],
+   "covers": []
+  },
+  {
+   "id": "AT-10",
+   "name": "Mac 实时取数（美股和港股）",
+   "flowSteps": [
+    2
+   ],
+   "covers": [
+    "CLI",
+    "DATA",
+    "R-MKT",
+    "R-SEC",
+    "R-HKEX",
+    "R-MACRO",
+    "ST-SNAP"
+   ]
+  },
+  {
+   "id": "AT-11",
+   "name": "INTC 财报前预案回放",
+   "flowSteps": [
+    10
+   ],
+   "covers": [
+    "CLI",
+    "EARN",
+    "QA"
+   ]
+  },
+  {
+   "id": "AT-12",
+   "name": "联想 0992 港股回放",
+   "flowSteps": [
+    4,
+    6
+   ],
+   "covers": [
+    "CLI",
+    "EARN",
+    "ZONES",
+    "VAL",
+    "TECH",
+    "QA"
+   ]
+  }
+ ],
+ "slices": [
+  {
+   "id": "SL-1",
+   "name": "能跑：INTC 财报包回放到报告",
+   "ats": [
+    "AT-1",
+    "AT-6",
+    "AT-9"
+   ],
+   "steps": [
+    3,
+    4,
+    7
+   ],
+   "demo": "python -m stockdesk demo intc-q3-2026"
+  },
+  {
+   "id": "SL-2",
+   "name": "买点：三档规则、数据守门、港股",
+   "ats": [
+    "AT-2",
+    "AT-3",
+    "AT-4",
+    "AT-12"
+   ],
+   "steps": [
+    6
+   ],
+   "demo": "python -m stockdesk zones INTC --replay intc-q3-2026 --eps 1.75 --pe 38-45"
+  },
+  {
+   "id": "SL-3",
+   "name": "真数据：美股和港股取数、云端导入、Claude 技能",
+   "ats": [
+    "AT-10",
+    "AT-5"
+   ],
+   "steps": [
+    2,
+    5
+   ],
+   "demo": "python -m stockdesk fetch INTC"
+  },
+  {
+   "id": "SL-4",
+   "name": "盯盘：观察清单、周五复盘、财报前预案、定时提醒",
+   "ats": [
+    "AT-7",
+    "AT-8",
+    "AT-11"
+   ],
+   "steps": [
+    1,
+    8,
+    9,
+    10
+   ],
+   "demo": "python -m stockdesk check --replay week-2026-10-30"
+  }
+ ],
+ "revision": {
+  "version": "0.3",
+  "from": "0.2",
+  "date": "2026-10-30",
+  "title": "按你的决定：仓库放 GitHub，港股进第一版，不买付费数据",
+  "added": [
+   "R-WEB",
+   "R-HKEX",
+   "INV-13",
+   "AT-12"
+  ],
+  "items": [
+   {
+    "refs": [
+     "R-HKEX",
+     "DATA",
+     "AT-10"
+    ],
+    "text": "港股进第一版：新增港交所披露易作为港股财报的标准来源；Mac 上用 AKShare 和 yfinance 取港股行情；实时取数验收同时跑 INTC 和 0992。"
+   },
+   {
+    "refs": [
+     "AT-12",
+     "SL-2",
+     "INV-13",
+     "VAL"
+    ],
+    "text": "新增联想 0992 回放验收（排进切片 2）：港元股价配美元财报必须换算汇率；用港股交易日历；港股没有数字化指引，一致预期作为非关键字段。"
+   },
+   {
+    "refs": [
+     "R-WEB",
+     "SKILL",
+     "AT-5"
+    ],
+    "text": "把云端 Claude 抓的网页单独画成“公开网页”，和 Mac 上直连的接口分开，图上的调用关系更准确。"
+   },
+   {
+    "refs": [
+     "QA",
+     "SKILL"
+    ],
+    "text": "不买付费数据：电话会实录降为非关键字段，拿不到时改读 IR 演示材料和公告，报告注明“未取得电话会实录”。"
+   }
+  ]
+ }
+}

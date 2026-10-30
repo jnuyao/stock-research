@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>股票研究台施工蓝图</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>/* 布局：顶部是图签，中间左图右文，下方是检查报告。像一张带图签的施工图。 */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --ink: #16202a;
+  --muted: #5a6876;
+  --line: #cdd5dd;
+  --grid: #e2e7ec;
+  --accent: #1c5ec4;
+  --accent-weak: #e2ebfa;
+  --ok: #24804a;
+  --ok-weak: #e0f2e6;
+  --bad: #c03a28;
+  --bad-weak: #fbe4df;
+  --edge: #6d7a87;
+  --region: #98a5b2;
+  --l-shell: #e3ecf8; --l-shell-s: #4a77bc;
+  --l-api: #e7ebef; --l-api-s: #677482;
+  --l-agent: #e0f1ed; --l-agent-s: #2a8474;
+  --l-platform: #ebe6f7; --l-platform-s: #705db8;
+  --l-security: #faefd8; --l-security-s: #b27c18;
+  --l-skill: #f8e4eb; --l-skill-s: #b5517a;
+  --l-plugin: #e2f1e3; --l-plugin-s: #388d47;
+  --l-resource: #f6e7e1; --l-resource-s: #b46248;
+  --l-store: #ece7e1; --l-store-s: #7a6a5b;
+  --rev: #c25400; --rev-weak: #fdeedf;
+  --f-display: "IBM Plex Sans Condensed", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --f-body: "IBM Plex Sans", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1318; --surface: #141d25; --ink: #e2e8ee; --muted: #94a2af; --line: #2a3743; --grid: #1b252f;
+    --accent: #7aa8f2; --accent-weak: #1b2a40; --ok: #5bc27c; --ok-weak: #16301f; --bad: #f07a66; --bad-weak: #3a1c17;
+    --edge: #8d9aa7; --region: #4b5967;
+    --l-shell: #19273a; --l-shell-s: #7fa6df; --l-api: #1c232b; --l-api-s: #9aa6b2;
+    --l-agent: #132c28; --l-agent-s: #5fbfad; --l-platform: #231e3a; --l-platform-s: #a795e4;
+    --l-security: #32270f; --l-security-s: #dfae52; --l-skill: #351829; --l-skill-s: #e48aad;
+    --l-plugin: #152f1b; --l-plugin-s: #6bc47a; --l-resource: #34201a; --l-resource-s: #e3997d;
+    --l-store: #29231e; --l-store-s: #c4ad97; --rev: #ffa057; --rev-weak: #3b2412;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1318; --surface: #141d25; --ink: #e2e8ee; --muted: #94a2af; --line: #2a3743; --grid: #1b252f;
+  --accent: #7aa8f2; --accent-weak: #1b2a40; --ok: #5bc27c; --ok-weak: #16301f; --bad: #f07a66; --bad-weak: #3a1c17;
+  --edge: #8d9aa7; --region: #4b5967;
+  --l-shell: #19273a; --l-shell-s: #7fa6df; --l-api: #1c232b; --l-api-s: #9aa6b2;
+  --l-agent: #132c28; --l-agent-s: #5fbfad; --l-platform: #231e3a; --l-platform-s: #a795e4;
+  --l-security: #32270f; --l-security-s: #dfae52; --l-skill: #351829; --l-skill-s: #e48aad;
+  --l-plugin: #152f1b; --l-plugin-s: #6bc47a; --l-resource: #34201a; --l-resource-s: #e3997d;
+  --l-store: #29231e; --l-store-s: #c4ad97; --rev: #ffa057; --rev-weak: #3b2412;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.page {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 20px;
+}
+code, .mono { font-family: var(--f-mono); font-size: 0.92em; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+h2 { font-size: 18px; font-weight: 600; }
+
+/* 图签 */
+.masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: end;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 16px;
+}
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 12px; letter-spacing: 0.08em; }
+.masthead h1 { font-size: 30px; font-weight: 600; line-height: 1.2; }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 62ch; }
+.titleblock {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  border: 1px solid var(--ink);
+  font-size: 12px;
+  background: var(--surface);
+}
+.titleblock dt, .titleblock dd { margin: 0; padding: 5px 10px; border-bottom: 1px solid var(--line); }
+.titleblock dt { color: var(--muted); border-right: 1px solid var(--line); letter-spacing: 0.06em; }
+.titleblock dd { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.titleblock dt:nth-last-of-type(1), .titleblock dd:nth-last-of-type(1) { border-bottom: 0; }
+
+/* 工具条 */
+.toolbar { display: grid; gap: 8px; }
+.tb-row { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.tb-label { font-family: var(--f-display); font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; min-width: 4.8em; }
+.tb-row .toggle { margin-left: auto; }
+.steps { display: flex; flex-wrap: wrap; gap: 6px; }
+.steps button, .toggle {
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  min-height: 32px;
+}
+.steps button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.steps button:hover, .toggle:hover:not(:disabled) { border-color: var(--accent); }
+.toggle[aria-pressed="true"] { background: var(--accent-weak); border-color: var(--accent); }
+.toggle:disabled { color: var(--muted); cursor: not-allowed; }
+button:focus-visible, .mod:focus-visible, .ref:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 主工作区 */
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 420px); gap: 20px; align-items: start; }
+.diagram-card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.diagram-scroll { overflow-x: auto; padding: 8px; }
+#diagram { display: block; width: 100%; min-width: 760px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend svg { flex: none; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid; display: inline-block; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  position: sticky;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  min-width: 0;
+}
+.panel h2 { font-size: 20px; }
+.panel h3 { font-size: 14px; font-weight: 600; margin-top: 18px; margin-bottom: 6px; color: var(--muted); letter-spacing: 0.04em; }
+.panel .idline { font-family: var(--f-mono); font-size: 12px; color: var(--muted); margin: 2px 0 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); }
+.chip.ok { color: var(--ok); background: var(--ok-weak); border-color: transparent; }
+.chip.bad { color: var(--bad); background: var(--bad-weak); border-color: transparent; }
+.problems { margin: 8px 0; padding: 10px 12px; background: var(--bad-weak); color: var(--bad); border-radius: 6px; font-size: 13px; }
+.problems ul { margin: 0; padding-left: 18px; }
+.links { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.links li { font-size: 13px; }
+.links .via { color: var(--muted); }
+.ref {
+  font: inherit;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 0 5px;
+  cursor: pointer;
+  line-height: 1.6;
+}
+.ref.unknown { color: var(--bad); border-color: var(--bad); cursor: default; }
+.spec-src { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+.md { border-left: 3px solid var(--accent); padding-left: 12px; font-size: 13.5px; }
+.md p { margin: 6px 0; }
+.md ul, .md ol { margin: 6px 0; padding-left: 20px; }
+.md li { margin: 2px 0; }
+.md pre, pre.demo {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
+}
+pre.demo { white-space: pre-wrap; overflow-wrap: anywhere; }
+.md pre code, pre.demo code { font-size: inherit; font-family: var(--f-mono); }
+.md :not(pre) > code { background: var(--bg); padding: 0 4px; border-radius: 3px; }
+.md .md-table { overflow-x: auto; }
+.md table, table.grid { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+.md th, .md td, table.grid th, table.grid td { border: 1px solid var(--line); padding: 5px 8px; text-align: left; vertical-align: top; }
+.md th, table.grid th { background: var(--bg); font-weight: 600; }
+.howto { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.howto li::marker { font-family: var(--f-mono); color: var(--accent); }
+.big-status { display: flex; align-items: baseline; gap: 10px; margin: 10px 0 14px; }
+.big-status strong { font-family: var(--f-display); font-size: 34px; font-variant-numeric: tabular-nums; line-height: 1; }
+.big-status.ok strong { color: var(--ok); }
+.big-status.bad strong { color: var(--bad); }
+
+/* 图上元素 */
+#diagram text { font-family: var(--f-body); }
+.region rect { fill: none; stroke: var(--region); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.region text, .row-label { fill: var(--muted); font-size: 12px; letter-spacing: 0.04em; }
+.row-label.big { font-size: 13px; fill: var(--ink); font-weight: 600; }
+.region .note { font-family: var(--f-mono); font-size: 11px; }
+.boundary line { stroke: var(--bad); stroke-width: 1.5; stroke-dasharray: 8 5; }
+.boundary text { fill: var(--bad); font-size: 12px; }
+.mod { cursor: pointer; }
+.mod rect.box { stroke-width: 1.5; }
+.mod .name { fill: var(--ink); font-size: 13.5px; font-weight: 600; }
+.mod .sub { fill: var(--muted); font-size: 11.5px; }
+.mod .dir { fill: var(--muted); font-family: var(--f-mono); font-size: 10px; }
+.mod:hover rect.box { stroke-width: 2.5; }
+.mod.selected rect.box { stroke: var(--accent); stroke-width: 3; }
+.mod.dim { opacity: 0.28; }
+.mod.hl rect.box { stroke-width: 2.5; }
+.mod .badge-ok { fill: var(--ok); }
+.mod .badge-bad { fill: var(--bad); }
+.mod .badge-mark { fill: var(--surface); font-size: 10px; font-weight: 700; }
+.layer-shell rect.box { fill: var(--l-shell); stroke: var(--l-shell-s); }
+.layer-api rect.box { fill: var(--l-api); stroke: var(--l-api-s); }
+.layer-agent rect.box { fill: var(--l-agent); stroke: var(--l-agent-s); }
+.layer-platform rect.box { fill: var(--l-platform); stroke: var(--l-platform-s); }
+.layer-security rect.box { fill: var(--l-security); stroke: var(--l-security-s); }
+.layer-skill rect.box { fill: var(--l-skill); stroke: var(--l-skill-s); }
+.layer-plugin rect.box { fill: var(--l-plugin); stroke: var(--l-plugin-s); }
+.layer-resource rect.box { fill: var(--l-resource); stroke: var(--l-resource-s); }
+.layer-store rect.box { fill: var(--l-store); stroke: var(--l-store-s); }
+.mod.sl-new rect.box { stroke: var(--accent); stroke-width: 3.2; }
+.mod.has-problem rect.box { stroke: var(--bad); stroke-width: 2.5; }
+
+.edge .ln { fill: none; stroke: var(--edge); stroke-width: 1.5; }
+.edge.kind-load .ln { stroke-dasharray: 6 3 1.5 3; }
+.edge.kind-spawn .ln { stroke-dasharray: 5 4; }
+.edge.kind-external .ln { stroke-dasharray: 1.5 3.5; stroke-width: 2; }
+.edge .hit { fill: none; stroke: transparent; stroke-width: 12; cursor: pointer; }
+.edge:hover .ln { stroke: var(--accent); stroke-width: 2.2; }
+.edge.selected .ln, .edge.hl .ln { stroke: var(--accent); stroke-width: 2.6; }
+.edge.dim { opacity: 0.18; }
+.edge.not-in-spec .ln { stroke: var(--bad); }
+.edge.act-ok .ln { stroke: var(--ok); stroke-width: 2.2; }
+.edge.act-missing .ln { stroke: var(--muted); stroke-dasharray: 3 4; opacity: 0.7; }
+.edge.act-extra .ln { stroke: var(--bad); stroke-width: 2.4; }
+.mk { fill: var(--edge); }
+.mk-hl { fill: var(--accent); }
+.mk-ok { fill: var(--ok); }
+.mk-bad { fill: var(--bad); }
+.mk-miss { fill: var(--muted); }
+.mk-rev { fill: var(--rev); }
+
+/* 本版改动 */
+.rev-tag { display: none; pointer-events: none; }
+.rev-tag rect { fill: var(--rev); }
+.rev-tag text { fill: var(--surface); font-size: 10px; font-weight: 700; }
+svg.show-rev .rev-tag { display: inline; }
+svg.show-rev .mod.rev-on rect.box { stroke: var(--rev); stroke-width: 2.6; stroke-dasharray: 5 3; }
+svg.show-rev .mod.selected rect.box { stroke: var(--accent); stroke-dasharray: none; }
+svg.show-rev .edge.rev-on .ln { stroke: var(--rev); stroke-width: 2.4; }
+svg.show-rev .edge.selected .ln { stroke: var(--accent); }
+.toggle.rev[aria-pressed="true"] { background: var(--rev-weak); border-color: var(--rev); }
+.chip.rev { color: var(--rev); background: var(--rev-weak); border-color: transparent; }
+.revision { border: 1px solid var(--rev); background: var(--rev-weak); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+.revision.small { padding: 6px 12px; margin: 8px 0; font-size: 13px; }
+.revision.small ul { margin: 0; padding-left: 18px; }
+.revision h3 { margin: 0 0 4px; color: var(--rev); }
+.revision p { margin: 4px 0; }
+.revision ol { margin: 6px 0; padding-left: 20px; display: grid; gap: 8px; }
+.revision .rev-refs { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px; }
+.step-badge circle { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.step-badge text { fill: var(--surface); font-size: 11px; font-weight: 700; font-family: var(--f-mono); }
+.step-badge { cursor: pointer; }
+.step-badge.dim { opacity: 0.25; }
+
+/* 协议时序 */
+.step-detail { font-size: 13.5px; margin: 8px 0; }
+.step-detail code, .seq code { font-family: var(--f-mono); font-size: 0.92em; background: var(--bg); padding: 0 4px; border-radius: 3px; }
+.seq { border: 1px solid var(--line); border-radius: 6px; padding: 8px 8px 6px 0; overflow-x: auto; }
+.seq-headrow { display: grid; grid-template-columns: var(--seq-w) minmax(0, 1fr); gap: 8px; margin-bottom: 6px; }
+.seq-lanes { position: relative; height: 22px; }
+.seq-pcell { position: absolute; top: 0; transform: translateX(-50%); }
+.seq-p { display: inline-block; white-space: nowrap; font-size: 10.5px; font-weight: 600; line-height: 18px; padding: 1px 4px; border: 1.2px solid var(--line); border-radius: 4px; background: var(--surface); }
+.seq-p.ext { border-style: dashed; color: var(--muted); }
+.seq-wrap { position: relative; }
+.seq-life { position: absolute; left: 0; top: 0; height: 100%; }
+.seq-life line { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.seq-body { list-style: none; margin: 0; padding: 0; position: relative; }
+.seq-row { display: grid; grid-template-columns: var(--seq-w) minmax(0, 1fr); gap: 8px; padding: 3px 0; }
+.seq-msg { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 4px; font-size: 12.5px; line-height: 18px; padding-top: 2px; }
+.seq-no { font-family: var(--f-mono); font-size: 11px; color: var(--muted); text-align: right; }
+.seq-text { font-weight: 500; }
+.seq-note { font-family: var(--f-mono); font-size: 11px; line-height: 16px; color: var(--muted); overflow-wrap: anywhere; }
+.seq-note code { background: none; padding: 0; }
+.seq-sec { position: relative; margin: 6px 0 2px; padding: 3px 8px; background: var(--bg); border-top: 1px solid var(--line); font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
+.seq-arrow { display: block; overflow: visible; }
+.seq-arrow .seq-ln { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.seq-arrow .seq-head { fill: var(--ink); stroke: none; }
+.seq-arrow .seq-head.open { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.seq-arrow.k-response .seq-ln { stroke: var(--muted); stroke-dasharray: 5 3; }
+.seq-arrow.k-response .seq-head { fill: var(--muted); }
+.seq-arrow.k-spawn .seq-ln { stroke: var(--accent); stroke-width: 2.2; }
+.seq-arrow.k-spawn .seq-head { fill: var(--accent); }
+.seq-arrow.k-local .seq-ln { stroke: var(--edge); stroke-dasharray: 1.5 3; }
+.seq-arrow.k-local .seq-head { fill: var(--edge); }
+.seq-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 4px; font-size: 11.5px; color: var(--muted); }
+.seq-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.seq-arrow.mini { display: inline-block; }
+.seq-who { margin-top: 6px; }
+
+/* 报告区 */
+.report { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; gap: 10px; min-width: 0; }
+.report.two-col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+.report.two-col > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.section-note { margin: 0; color: var(--muted); }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.checks li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; }
+.checks .state { font-size: 12px; font-weight: 600; text-align: center; border-radius: 4px; padding: 2px 0; align-self: start; }
+.checks .state.ok { color: var(--ok); background: var(--ok-weak); }
+.checks .state.bad { color: var(--bad); background: var(--bad-weak); }
+.checks .t { font-weight: 600; }
+.checks .e { color: var(--muted); font-size: 13px; }
+.checks ul { margin: 4px 0 0; padding-left: 18px; color: var(--bad); font-size: 13px; }
+.table-scroll { overflow-x: auto; }
+.phases { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.phases li { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; display: grid; gap: 4px; }
+.phases .ph-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.phases .ph-name { font-weight: 600; }
+.phases .ph-steps { margin-left: auto; font-size: 12px; color: var(--muted); font-family: var(--f-mono); }
+.phases .ph-demo code { font-family: var(--f-mono); font-size: 12px; background: var(--grid); border-radius: 4px; padding: 2px 6px; overflow-wrap: anywhere; }
+.phases .ph-ats { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--muted); }
+.foot { color: var(--muted); font-size: 12px; }
+
+@media (max-width: 1100px) {
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .panel { position: static; max-height: none; }
+  .report.two-col { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .masthead { grid-template-columns: minmax(0, 1fr); }
+  .masthead h1 { font-size: 24px; }
+  .titleblock { justify-self: start; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .edge .ln, .mod rect.box { transition: stroke 0.15s ease, stroke-width 0.15s ease, opacity 0.15s ease; }
+}
+
+:root { --lc-entry: var(--l-shell); --lc-entry-s: var(--l-shell-s); }
+.layer-entry rect.box { fill: var(--lc-entry); stroke: var(--lc-entry-s); }
+:root { --lc-skill: var(--l-skill); --lc-skill-s: var(--l-skill-s); }
+.layer-skill rect.box { fill: var(--lc-skill); stroke: var(--lc-skill-s); }
+:root { --lc-cli: var(--l-platform); --lc-cli-s: var(--l-platform-s); }
+.layer-cli rect.box { fill: var(--lc-cli); stroke: var(--lc-cli-s); }
+:root { --lc-data: var(--l-api); --lc-data-s: var(--l-api-s); }
+.layer-data rect.box { fill: var(--lc-data); stroke: var(--lc-data-s); }
+:root { --lc-guard: var(--l-security); --lc-guard-s: var(--l-security-s); }
+.layer-guard rect.box { fill: var(--lc-guard); stroke: var(--lc-guard-s); }
+:root { --lc-core: var(--l-agent); --lc-core-s: var(--l-agent-s); }
+.layer-core rect.box { fill: var(--lc-core); stroke: var(--lc-core-s); }
+:root { --lc-store: var(--l-store); --lc-store-s: var(--l-store-s); }
+.layer-store rect.box { fill: var(--lc-store); stroke: var(--lc-store-s); }
+:root { --lc-resource: var(--l-resource); --lc-resource-s: var(--l-resource-s); }
+.layer-resource rect.box { fill: var(--lc-resource); stroke: var(--lc-resource-s); }</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="masthead-text">
+      <p class="eyebrow">美股与港股 · 财报解读与分档买点</p>
+      <h1>股票研究台施工蓝图</h1>
+      <p class="lede">图、文字规格、代码是否一致，在这一页看清。点图上的方框或箭头，右侧显示 SPEC.md 里对应的原文。</p>
+    </div>
+    <dl class="titleblock" id="titleblock"></dl>
+  </header>
+  <nav class="toolbar" aria-label="查看方式">
+    <div class="tb-row"><span class="tb-label">研究流程</span><div class="steps" id="steps" role="group" aria-label="研究流程"></div><button type="button" class="toggle rev" id="rev-toggle" aria-pressed="false" hidden></button></div>
+    <div class="tb-row"><span class="tb-label">施工切片</span><div class="steps" id="slices" role="group" aria-label="施工切片"></div><button type="button" class="toggle" id="actual-toggle" aria-pressed="false"></button></div>
+  </nav>
+  <main class="workspace">
+    <section class="diagram-card" aria-label="架构图">
+      <div class="diagram-scroll"><svg id="diagram" role="img" aria-label="股票研究台施工蓝图 架构图"></svg></div>
+      <div class="legend" id="legend"></div>
+    </section>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <section class="report" aria-labelledby="checks-title">
+    <h2 id="checks-title">一致性检查</h2>
+    <p class="section-note">这些检查由 <code>design/tools/build.mjs</code> 在生成本页时完成。全部通过，说明文字和图没有偏差。</p>
+    <ol class="checks" id="checks"></ol>
+  </section>
+  <section class="report two-col">
+    <div>
+      <h2>不变量：绝不能发生的事</h2>
+      <div class="table-scroll"><table class="grid" id="inv-table"></table></div>
+    </div>
+    <div>
+      <h2>施工切片</h2>
+      <p class="section-note">每个切片做完都能跑演示命令看到结果。点切片编号，图上会标出它新建的模块。</p>
+      <ol class="phases" id="phases"></ol>
+    </div>
+  </section>
+  <footer class="foot" id="foot"></footer>
+</div>
+<script id="bp-data" type="application/json">{"model":{"title":"股票研究台施工蓝图","eyebrow":"美股与港股 · 财报解读与分档买点","flowName":"研究流程","drawingNo":"STOCK-ARCH-001","version":"0.3","note":"这是架构图的唯一事实来源。审阅页、Mermaid 图、架构检查都从这里生成或读取；SPEC.md 必须与这里一致。箭头方向 = 调用方 → 被调用方。","canvas":{"w":1000,"h":670},"arch":{"tool":"python","command":"make arch","srcRoot":"src/","package":"stockdesk","external":["examples/"]},"sharedDirs":{"host":"src/stockdesk/shared/"},"entryFiles":{"src/stockdesk/__init__.py":[],"src/stockdesk/__main__.py":["CLI"]},"layers":[{"id":"entry","name":"入口","color":"shell"},{"id":"skill","name":"Claude 技能","color":"skill"},{"id":"cli","name":"命令行","color":"platform"},{"id":"data","name":"数据网关","color":"api"},{"id":"guard","name":"数据守门","color":"security"},{"id":"core","name":"分析内核","color":"agent"},{"id":"store","name":"本机文件","color":"store"},{"id":"resource","name":"外部来源","color":"resource"}],"edgeKinds":[{"id":"call","name":"代码调用","guard":"arch"},{"id":"load","name":"读写本机文件","guard":"test"},{"id":"spawn","name":"启动会话或命令","guard":"test"},{"id":"external","name":"访问外部系统","guard":"test"}],"regions":[{"id":"sources","name":"外部数据来源","x":10,"y":112,"w":226,"h":336},{"id":"kernel","name":"分析内核","x":385,"y":206,"w":590,"h":288}],"labels":[{"text":"存储","x":20,"y":620},{"text":"所有分析只读快照，可回放","x":20,"y":638,"small":true}],"modules":[{"id":"R-OUT","name":"Claude 项目","sub":"报告页 · 提醒消息","layer":"resource","owner":"Claude","code":false,"box":{"x":20,"y":40,"w":280,"h":60}},{"id":"SKILL","name":"Claude 技能","sub":"财报前预案 · 财报解读 · 买点 · 周五复盘","layer":"skill","owner":"本项目","code":false,"box":{"x":340,"y":40,"w":380,"h":60}},{"id":"SCHED","name":"定时任务","sub":"周五收盘后 · 财报前 3 天 · 财报次日","layer":"entry","owner":"你","code":false,"box":{"x":760,"y":40,"w":200,"h":60}},{"id":"CLI","name":"命令行 sd","sub":"预检 · 取数 · 预案 · 财报包 · 买点 · 清单 · 复盘 · 报告","layer":"cli","owner":"本项目","dir":"src/stockdesk/cli/","code":true,"box":{"x":340,"y":150,"w":620,"h":44}},{"id":"R-WEB","name":"公开网页","sub":"云端 WebFetch：行情 · 公告 · IR","layer":"resource","owner":"第三方","code":false,"box":{"x":20,"y":150,"w":205,"h":50}},{"id":"R-MKT","name":"行情与预期接口","sub":"yfinance · AKShare","layer":"resource","owner":"第三方","code":false,"box":{"x":20,"y":210,"w":205,"h":50}},{"id":"R-SEC","name":"SEC EDGAR","sub":"8-K · 10-Q · XBRL","layer":"resource","owner":"美国证监会","code":false,"box":{"x":20,"y":270,"w":205,"h":50}},{"id":"R-HKEX","name":"港交所披露易","sub":"业绩公告 · 年报中报","layer":"resource","owner":"港交所","code":false,"box":{"x":20,"y":330,"w":205,"h":50}},{"id":"R-MACRO","name":"宏观数据","sub":"FRED 利率 · VIX · 汇率","layer":"resource","owner":"第三方","code":false,"box":{"x":20,"y":390,"w":205,"h":50}},{"id":"DATA","name":"数据网关","sub":"来源登记 · 网络预检 · 抓取 · 导入","layer":"data","owner":"本项目","dir":"src/stockdesk/data/","code":true,"box":{"x":20,"y":470,"w":280,"h":56}},{"id":"EARN","name":"财报包","sub":"预案 · 实际 vs 预期","layer":"core","owner":"本项目","dir":"src/stockdesk/earnings/","code":true,"box":{"x":400,"y":246,"w":130,"h":56}},{"id":"ZONES","name":"买点规则","sub":"三档 · 右侧 · 失效位","layer":"core","owner":"本项目","dir":"src/stockdesk/zones/","code":true,"box":{"x":550,"y":246,"w":130,"h":56}},{"id":"WATCH","name":"观察清单","sub":"保存买点 · 周五复盘","layer":"core","owner":"本项目","dir":"src/stockdesk/watch/","code":true,"box":{"x":700,"y":246,"w":120,"h":56}},{"id":"REPORT","name":"报告","sub":"出报告前自查","layer":"core","owner":"本项目","dir":"src/stockdesk/report/","code":true,"box":{"x":840,"y":246,"w":120,"h":56}},{"id":"VAL","name":"估值","sub":"PE 区间 · 分位","layer":"core","owner":"本项目","dir":"src/stockdesk/valuation/","code":true,"box":{"x":512,"y":336,"w":118,"h":56}},{"id":"TECH","name":"技术位","sub":"均线 · 支撑 · 回撤","layer":"core","owner":"本项目","dir":"src/stockdesk/technicals/","code":true,"box":{"x":640,"y":336,"w":118,"h":56}},{"id":"QA","name":"数据守门","sub":"覆盖率 · 时效 · 缺口清单","layer":"guard","owner":"本项目","dir":"src/stockdesk/qa/","code":true,"box":{"x":400,"y":430,"w":380,"h":48}},{"id":"ST-SNAP","name":"数据快照","sub":"data/snapshots/","layer":"store","owner":"本机文件","code":false,"box":{"x":200,"y":590,"w":190,"h":50}},{"id":"ST-WATCH","name":"观察清单文件","sub":"data/watchlist.csv","layer":"store","owner":"本机文件","code":false,"box":{"x":600,"y":590,"w":170,"h":50}},{"id":"ST-REPORT","name":"报告归档","sub":"reports/代码/季度/","layer":"store","owner":"本机文件","code":false,"box":{"x":800,"y":590,"w":170,"h":50}}],"edges":[{"id":"E1","from":"SCHED","to":"SKILL","kind":"spawn","label":"按时间启动一个 Claude 会话，跑 weekly-check 或 earnings-review","path":[[760,70],[720,70]]},{"id":"E2","from":"SKILL","to":"CLI","kind":"spawn","label":"运行 sd 命令，读取 JSON 输出","path":[[530,100],[530,150]]},{"id":"E3","from":"SKILL","to":"R-WEB","kind":"external","label":"云端：用 WebFetch 抓行情、预期、财报公告、电话会实录或 IR 演示材料","path":[[360,100],[360,107],[120,107],[120,150]]},{"id":"E4","from":"SKILL","to":"R-OUT","kind":"external","label":"发布报告页；有提醒时在项目里发消息","path":[[340,70],[300,70]]},{"id":"E5","from":"CLI","to":"DATA","kind":"call","label":"fetch 抓取 / import 导入网页数据","path":[[360,194],[360,498],[300,498]]},{"id":"E6","from":"CLI","to":"EARN","kind":"call","label":"pack：组装财报包","path":[[465,194],[465,246]]},{"id":"E7","from":"CLI","to":"ZONES","kind":"call","label":"zones：按输入假设算三档","path":[[615,194],[615,246]]},{"id":"E8","from":"CLI","to":"WATCH","kind":"call","label":"watch 保存买点 / check 周五复盘","path":[[760,194],[760,246]]},{"id":"E9","from":"CLI","to":"REPORT","kind":"call","label":"report：分析包 + Claude 的解读 → HTML","path":[[900,194],[900,246]]},{"id":"E10","from":"DATA","to":"R-MKT","kind":"external","label":"Mac：美股和港股价格、历史、一致预期","path":[[284,470],[284,235],[225,235]]},{"id":"E11","from":"DATA","to":"R-SEC","kind":"external","label":"Mac：8-K 附件、XBRL 三表","path":[[266,470],[266,295],[225,295]]},{"id":"E12","from":"DATA","to":"R-MACRO","kind":"external","label":"Mac：10 年期利率、VIX、信用利差、美元兑港元","path":[[130,470],[130,440]]},{"id":"E13","from":"DATA","to":"ST-SNAP","kind":"load","label":"写入带来源和时间的快照","path":[[240,526],[240,590]]},{"id":"E14","from":"EARN","to":"QA","kind":"call","label":"取财报、预期、指引字段","path":[[465,302],[465,430]]},{"id":"E15","from":"ZONES","to":"VAL","kind":"call","label":"合理 PE 区间对应的价格","path":[[580,302],[580,336]]},{"id":"E16","from":"ZONES","to":"TECH","kind":"call","label":"均线、多次测试的支撑、52 周高点回撤","path":[[660,302],[660,336]]},{"id":"E17","from":"VAL","to":"QA","kind":"call","label":"取 EPS 预期、历史 PE","path":[[570,392],[570,430]]},{"id":"E18","from":"TECH","to":"QA","kind":"call","label":"取日线和周线收盘","path":[[690,392],[690,430]]},{"id":"E19","from":"WATCH","to":"QA","kind":"call","label":"取最新周收盘和宏观信号","path":[[772,302],[772,430]]},{"id":"E20","from":"WATCH","to":"ST-WATCH","kind":"load","label":"读写三档价、失效位、上次状态","path":[[800,302],[800,560],[700,560],[700,590]]},{"id":"E21","from":"QA","to":"ST-SNAP","kind":"load","label":"读快照，判断能不能用","path":[[420,478],[420,560],[350,560],[350,590]]},{"id":"E22","from":"REPORT","to":"ST-REPORT","kind":"load","label":"写 HTML 和分析包","path":[[900,302],[900,590]]},{"id":"E23","from":"DATA","to":"R-HKEX","kind":"external","label":"Mac：港股业绩公告和定期报告","path":[[250,470],[250,355],[225,355]]}],"flow":[{"n":1,"title":"你在项目里提问，或定时任务启动会话","edges":["E1"],"badgeEdge":"E1","detail":["两种入口走同一套技能：你说“看下 INTC 财报”，Claude 直接跑 earnings-review；每周五美东收盘后和持仓公司财报次日，[SCHED] 自动启动会话跑 weekly-check 或 earnings-review。"]},{"n":2,"title":"取数：Mac 直连，云端由 Claude 抓网页再导入","edges":["E2","E5","E10","E11","E12","E13","E23"],"badgeEdge":"E5","detail":["Mac 上 `sd fetch INTC` 或 `sd fetch 0992.HK` 由 [DATA] 直连来源。云端的 Python 联网被拦（2026-10-30 实测 sec.gov、stockanalysis、FRED、雅虎全部拒绝连接），所以由 [SKILL] 用 WebFetch 抓 [R-WEB] 的网页，把结果存成 JSON，再 `sd import` 交给 [DATA]。","港股的财报数字以港交所披露易的业绩公告为准；股价是港元，联想这类公司的财报是美元，估值前必须按当日汇率换算。","两条路写出的快照格式完全一样，每个字段都带来源网址、抓取时间和数据日期。"],"sequence":{"title":"云端取数：Claude 抓网页，数据网关登记","participants":[{"id":"SKILL","name":"Claude"},{"id":"R-WEB","name":"网页"},{"id":"CLI"},{"id":"DATA"}],"messages":[{"section":"抓取（云端只能这样）"},{"from":"SKILL","to":"R-WEB","kind":"request","text":"WebFetch 行情页、财报公告","note":"stockanalysis /history/ · SEC 8-K Ex-99.1 · 披露易公告"},{"from":"R-WEB","to":"SKILL","kind":"response","text":"页面内容"},{"from":"SKILL","to":"SKILL","kind":"local","text":"按模板抽成 JSON","note":"字段 · 数值 · 来源网址 · 数据日期"},{"section":"登记"},{"from":"SKILL","to":"CLI","kind":"spawn","text":"sd import INTC fetched.json"},{"from":"CLI","to":"DATA","kind":"local","text":"校验字段和单位，补抓取时间"},{"from":"DATA","to":"DATA","kind":"local","text":"写快照","note":"data/snapshots/INTC/2026-10-30/"}]}},{"n":3,"title":"守门：数据不全、过期或打架就不往下走","edges":["E21"],"badgeEdge":"E21","detail":["[QA] 是分析内核读数据的唯一通道。它按命令检查必需字段、价格是否晚于上一个交易日收盘、两个来源是否一致；不通过就返回错误码和一份缺口清单（缺哪个字段、建议去哪个来源补），不给结论。","缺口清单交给 Claude 接管：按清单定点补抓再导入。真的补不到的非关键字段可以登记为“确认拿不到”，报告里显示为缺失，绝不用 0 或默认值顶替；价格、指引这类关键字段不能登记跳过。","这一步借鉴 UZI-Skill 的数据完整性检查和缺口接管，但改成硬拒绝：UZI 的覆盖率低于 40% 才算严重，所以 INTC 那次 61% 照样出了报告。"]},{"n":4,"title":"组装财报包：实际 vs 预期、指引、现金与资本","edges":["E6","E14"],"badgeEdge":"E6","detail":["`sd pack INTC` 输出一份 JSON：营收、GAAP 与 non-GAAP EPS 分开、毛利率、分部门、下季指引 vs 一致预期、自由现金流、capex、回购和增发。一次性项目（如 GOOGL 的 SpaceX 估值损失）单独标出。"]},{"n":5,"title":"Claude 读电话会和指引，写判断与 EPS 假设","edges":["E3"],"badgeEdge":"E3","detail":["这一步只有 Claude 做：读电话会实录和财报包，写出“市场在担心什么、指引意味着什么”，并给出前瞻 EPS 和合理 PE 的假设。它不算任何价位，价位交给下一步的规则引擎。","解读里要过四个视角（价值、成长、趋势、宏观），每个视角只能引用财报包里的数字；视角之间有矛盾时把矛盾写出来，不和稀泥。这是 UZI 评委团的轻量版：不投票、不打分。","解读文件记下它依据的财报包指纹。数据一旦更新，旧解读自动作废，必须重写。这个时效约定来自 UZI 的 agent_review。"]},{"n":6,"title":"规则引擎算三档买点和失效位","edges":["E7","E15","E16","E17","E18"],"badgeEdge":"E7","detail":["`sd zones INTC --eps 1.75 --pe 38-45` 把 Claude 的假设和 [VAL]、[TECH] 的价位合起来，按规则出 A/B/C 三档、仓位比例、右侧信号和周收盘失效位，每一档写明锚点（哪条均线、哪个 PE）。"]},{"n":7,"title":"自查通过后生成报告，每个数字可追到来源","edges":["E9","E22","E4"],"badgeEdge":"E9","detail":["`sd report INTC` 先跑一遍机械自查（借鉴 UZI 的 self_review）：解读里的数字都能在分析包里找到；解读对应的是当前数据；三档低于现价且递减；数据截至最近一个交易日；没有“基本面良好、前景广阔、值得关注”这类空话。有一项严重问题就拒绝生成。","通过后把分析包、三档买点和解读合成 HTML，样式沿用现有的 GOOGL、INTC 财报页，再由 Claude 发布成报告页。"]},{"n":8,"title":"买点写入观察清单","edges":["E8","E20"],"badgeEdge":"E20","detail":["`sd watch save INTC` 把三档价、失效位、依据、下次财报日写进 watchlist.csv，旧值留历史，方便复盘“是逻辑变了还是价格变了”。"]},{"n":9,"title":"周五复盘：对照三档和失效位，有变化才提醒","edges":["E19"],"badgeEdge":"E19","detail":["`sd check` 拿每只股票的最新周收盘对照观察清单，再看宏观信号（10 年期利率、VIX、信用利差）。只有进入某一档、跌破失效位、或信号翻转时才在项目里提醒你；没变化就安静。"]},{"n":10,"title":"财报前预案：要盯什么、三种情景各对应哪一档","edges":["E6","E14"],"badgeEdge":"E14","detail":["观察清单里的公司财报前 3 天，`sd preview INTC` 生成预案：一致预期表（每行带来源，拿不到的标“需补充”）、这个行业该盯的指标（如云业务的积压订单和 capex，半导体的毛利率和库存）、乐观/基准/悲观三种情景及触发条件、过去 8 次财报后的股价反应。","Claude 再把每种情景对应到买点动作，例如“悲观情景跳空到 A 档附近，等 2 个交易日再买”。方法来自 UZI 的 earnings-preview，它本身改编自 Anthropic 的金融插件。"]}],"invariants":[{"id":"INV-1","text":"每个数字都带来源网址和数据日期","verifiedBy":["AT-1","AT-10"]},{"id":"INV-2","text":"价格过期就不出买点和复盘结论","verifiedBy":["AT-4"]},{"id":"INV-3","text":"必需字段不全就不给结论，并说清缺什么","verifiedBy":["AT-4"]},{"id":"INV-4","text":"两个来源打架时两个值都列出，不悄悄挑一个","verifiedBy":["AT-4"]},{"id":"INV-5","text":"模型不编数字：价位只由规则引擎算，报告里的数字都能在分析包里找到","verifiedBy":["AT-3","AT-6"]},{"id":"INV-6","text":"每一档都有锚点和仓位，失效位按周收盘","verifiedBy":["AT-3"]},{"id":"INV-7","text":"GAAP 与 non-GAAP 分开，一次性项目单独标出","verifiedBy":["AT-2"]},{"id":"INV-8","text":"分析内核不联网，只有数据网关和 Claude 技能访问外部","verifiedBy":["AT-9"]},{"id":"INV-9","text":"不接券商、不下单、不存账户凭据","verifiedBy":["AT-9"]},{"id":"INV-10","text":"代码只允许图上的调用关系","verifiedBy":["AT-9"]},{"id":"INV-11","text":"解读必须对应当前数据：数据更新后旧解读作废","verifiedBy":["AT-6"]},{"id":"INV-13","text":"股价货币与财报货币不同时，估值前必须按当日汇率换算","verifiedBy":["AT-12"]},{"id":"INV-12","text":"补不到的数据显示为缺失，不用默认值顶替；关键字段不能跳过","verifiedBy":["AT-4"]}],"acceptance":[{"id":"AT-1","name":"INTC Q3'26 财报包回放","flowSteps":[3,4],"covers":["CLI","EARN","QA","ST-SNAP"]},{"id":"AT-2","name":"GOOGL Q3'26 一次性项目","flowSteps":[4],"covers":["EARN","QA"]},{"id":"AT-3","name":"INTC 三档买点回放","flowSteps":[6],"covers":["CLI","ZONES","VAL","TECH","QA"]},{"id":"AT-4","name":"数据守门：拒绝与缺口接管","flowSteps":[3,6],"covers":["CLI","QA","ZONES"]},{"id":"AT-5","name":"云端技能端到端（WebFetch 导入）","flowSteps":[2,5],"covers":["SKILL","CLI","DATA","R-WEB","R-OUT"]},{"id":"AT-6","name":"出报告前自查","flowSteps":[7],"covers":["CLI","REPORT","ST-REPORT"]},{"id":"AT-7","name":"观察清单与周五复盘","flowSteps":[8,9],"covers":["CLI","WATCH","ST-WATCH","QA"]},{"id":"AT-8","name":"定时触发只在有变化时提醒","flowSteps":[1,9],"covers":["SCHED","SKILL","R-OUT"]},{"id":"AT-9","name":"代码与架构图一致、内核不联网","flowSteps":[],"covers":[]},{"id":"AT-10","name":"Mac 实时取数（美股和港股）","flowSteps":[2],"covers":["CLI","DATA","R-MKT","R-SEC","R-HKEX","R-MACRO","ST-SNAP"]},{"id":"AT-11","name":"INTC 财报前预案回放","flowSteps":[10],"covers":["CLI","EARN","QA"]},{"id":"AT-12","name":"联想 0992 港股回放","flowSteps":[4,6],"covers":["CLI","EARN","ZONES","VAL","TECH","QA"]}],"slices":[{"id":"SL-1","name":"能跑：INTC 财报包回放到报告","ats":["AT-1","AT-6","AT-9"],"steps":[3,4,7],"demo":"python -m stockdesk demo intc-q3-2026"},{"id":"SL-2","name":"买点：三档规则、数据守门、港股","ats":["AT-2","AT-3","AT-4","AT-12"],"steps":[6],"demo":"python -m stockdesk zones INTC --replay intc-q3-2026 --eps 1.75 --pe 38-45"},{"id":"SL-3","name":"真数据：美股和港股取数、云端导入、Claude 技能","ats":["AT-10","AT-5"],"steps":[2,5],"demo":"python -m stockdesk fetch INTC"},{"id":"SL-4","name":"盯盘：观察清单、周五复盘、财报前预案、定时提醒","ats":["AT-7","AT-8","AT-11"],"steps":[1,8,9,10],"demo":"python -m stockdesk check --replay week-2026-10-30"}],"revision":{"version":"0.3","from":"0.2","date":"2026-10-30","title":"按你的决定：仓库放 GitHub，港股进第一版，不买付费数据","added":["R-WEB","R-HKEX","INV-13","AT-12"],"items":[{"refs":["R-HKEX","DATA","AT-10"],"text":"港股进第一版：新增港交所披露易作为港股财报的标准来源；Mac 上用 AKShare 和 yfinance 取港股行情；实时取数验收同时跑 INTC 和 0992。"},{"refs":["AT-12","SL-2","INV-13","VAL"],"text":"新增联想 0992 回放验收（排进切片 2）：港元股价配美元财报必须换算汇率；用港股交易日历；港股没有数字化指引，一致预期作为非关键字段。"},{"refs":["R-WEB","SKILL","AT-5"],"text":"把云端 Claude 抓的网页单独画成“公开网页”，和 Mac 上直连的接口分开，图上的调用关系更准确。"},{"refs":["QA","SKILL"],"text":"不买付费数据：电话会实录降为非关键字段，拿不到时改读 IR 演示材料和公告，报告注明“未取得电话会实录”。"}]}},"flowName":"研究流程","archCommand":"make arch","sections":{"R-OUT":{"title":"Claude 项目","body":"- 职责：你看到结果的地方。报告发布成报告页；周五复盘有变化时，在项目对话里发一条提醒。\n- 调用：无\n- 验收：[AT-5]、[AT-8]","line":74},"SKILL":{"title":"Claude 技能","body":"- 职责：四个技能文件，规定 Claude 每次按同样的步骤做事。技能只负责“读和判断”，不自己算价位。\n- 位置：`skills/`（Markdown，不是 Python 代码）\n- 调用：[CLI]、[R-WEB]、[R-OUT]\n- 验收：[AT-5]、[AT-8]\n- 四个技能：\n  - `earnings-preview`：财报前 3 天，`sd preview` → 把三种情景各对应到买点动作 → 发布预案页。\n  - `earnings-review`：取数（云端 WebFetch 后 `sd import`，Mac 上 `sd fetch`）→ `sd pack` → 读电话会实录和财报包，写“发生了什么、市场担心什么、指引意味着什么” → 给出前瞻 EPS 与 PE 假设 → `sd zones` → `sd report` → 发布报告页 → `sd watch save`。\n  - `buy-zones`：不在财报季时单独更新某只股票的三档，步骤是取数、假设、`sd zones`、`sd watch save`。\n  - `weekly-check`：取全部观察清单股票的周收盘和宏观数据 → `sd check` → 有提醒才发消息。\n- 要点：\n  - 每次写假设都要写一句理由，例如“FY27 EPS 取 1.75，低于财报前一致预期 2.14，因为 Q4 毛利率指引 38%”。\n  - 抓网页时把来源网址和页面上的数据日期一起记下；拿不到就留空，交给 [QA] 判定，不要猜。\n  - [QA] 拒绝时按缺口清单定点补抓；补不到的非关键字段用 `sd import --gap-ack` 登记原因。\n  - 解读必须过四个视角：价值（估值分位）、成长（营收和指引）、趋势（均线和支撑）、宏观（利率、VIX、信用利差）。每个视角只引用财报包里的数字；视角之间矛盾时写出矛盾本身。\n  - 解读文件开头写明所依据的财报包指纹（`sd pack` 输出里的 `pack_hash`）。\n  - 拿不到电话会实录时，改读公司 IR 的业绩演示材料和公告，并在解读开头写“未取得电话会实录”。","line":80},"SCHED":{"title":"定时任务","body":"- 职责：每周五美东收盘后跑 `weekly-check`；观察清单里的公司财报前 3 天跑 `earnings-preview`，发财报的次日跑 `earnings-review`。优先用 Claude 项目的定时任务，不需要额外服务器。\n- 调用：[SKILL]\n- 验收：[AT-8]","line":99},"CLI":{"title":"命令行 sd","body":"- 职责：唯一的程序入口。解析参数，调用对应模块，结果以 JSON 输出给 Claude，以简短中文摘要输出给人。\n- 代码目录：`src/stockdesk/cli/`\n- 调用：[DATA]、[EARN]、[ZONES]、[WATCH]、[REPORT]\n- 验收：[AT-1]、[AT-3]、[AT-4]、[AT-5]、[AT-6]、[AT-7]、[AT-10]、[AT-11]、[AT-12]\n- 接口：见第 4 节“命令行”。\n- 要点：\n  - 每个命令都支持 `--replay \u003c案例名>`，从 `tests/cases/` 读固定快照，用于测试和演示。\n  - 出错时打印错误码、原因和下一步，退出码非 0。","line":105},"R-WEB":{"title":"公开网页","body":"- 职责：云端唯一的取数途径，由 Claude 用 WebFetch 读取。已验证能读：stockanalysis.com（美股 `/stocks/\u003c代码>/`，港股 `/quote/hkg/\u003c代码>/`，含 history、financials、forecast、statistics）、marketbeat、stocktitan、SEC 原文页面。港股公告用披露易网页，电话会实录和 IR 材料用公司官网。\n- 调用：无\n- 验收：[AT-5]\n- 要点：网页可能有缓存，页面上的数据日期必须一起记下，交给 [QA] 判断时效。","line":116},"R-MKT":{"title":"行情与预期接口","body":"- 职责：Mac 上直连的行情库。yfinance（美股、港股日线，代码如 `0992.HK`）、AKShare（港股日线和财务摘要，东方财富等国内来源）。也可直接抓 stockanalysis 页面作为第二来源做交叉核对。\n- 调用：无\n- 验收：[AT-10]","line":123},"R-SEC":{"title":"SEC EDGAR","body":"- 职责：财报数字的标准来源。8-K 的新闻稿附件（Ex-99.1）、10-Q、10-K、XBRL 三表。免费，需要在请求头里写联系邮箱。\n- 调用：无\n- 验收：[AT-10]","line":129},"R-HKEX":{"title":"港交所披露易","body":"- 职责：港股财报数字的标准来源：业绩公告、中期报告、年度报告。免费。联想按季度发业绩公告，下一次是 2026-11-19。\n- 调用：无\n- 验收：[AT-10]","line":135},"R-MACRO":{"title":"宏观数据","body":"- 职责：10 年期美债利率、VIX、高收益债信用利差，用于主报告第 8 章的加仓和降风险信号；美元兑港元汇率，用于港股估值换算。\n- 调用：无\n- 验收：[AT-10]","line":141},"DATA":{"title":"数据网关","body":"- 职责：唯一访问外部数据的代码模块。两种进数方式：`fetch` 直连来源（Mac），`import` 接收 Claude 抓好的 JSON（云端）。统一写成快照，每个字段带来源和时间。\n- 来源登记：`config/sources.toml` 列出每个来源能给哪些字段、哪种环境能连、优先级。`sd doctor` 做网络预检，判断当前是云端还是 Mac、哪些来源能连，结果写进 `data/network-profile.json`；`fetch` 按它选来源，全部连不上时返回 `SOURCE_BLOCKED` 并提示走 WebFetch 导入。\n- 代码目录：`src/stockdesk/data/`\n- 调用：[R-MKT]、[R-SEC]、[R-HKEX]、[R-MACRO]、[ST-SNAP]\n- 验收：[AT-5]、[AT-10]\n- 接口：\n\n```text\ndoctor() -> NetworkProfile                        # 环境、各来源能否连通\nfetch(ticker, kinds=[\"price\",\"fundamentals\",\"consensus\",\"filing\",\"macro\"]) -> SnapshotRef\nimport_json(ticker, path, gap_ack=None) -> SnapshotRef   # 校验字段名、单位、日期格式；登记确认缺失的字段\n```\n\n- 要点：\n  - 单位统一：金额用美元、不缩写（16.5B 存成 16500000000）；百分比存小数。\n  - 抓取失败不重试三次以上，记录失败原因写进快照，让 [QA] 判断能否继续。","line":147},"EARN":{"title":"财报包","body":"- 职责：财报后，把一个季度整理成固定结构：实际 vs 预期、分部门、指引 vs 预期、现金与资本、一次性项目。财报前，生成预案：一致预期表、行业观察指标、乐观/基准/悲观三种情景及触发条件、过去 8 次财报后的股价反应。只组装和计算，不写判断。\n- 代码目录：`src/stockdesk/earnings/`\n- 调用：[QA]\n- 验收：[AT-1]、[AT-2]、[AT-11]、[AT-12]\n- 接口：\n\n```text\nbuild_pack(ticker, quarter, as_of) -> EarningsPack       # 字段见第 4 节，带 pack_hash\nbuild_preview(ticker, quarter, as_of) -> EarningsPreview\n```\n\n- 要点：\n  - GAAP 与 non-GAAP 各占一列，不合并。\n  - 新闻稿里列出的“其他收益/损失”超过当季营业利润 10% 时，标为一次性项目，并给出剔除后的营业利润。\n  - 行业观察指标写在 `config/watch_metrics.toml`，先覆盖 AI 产业链：半导体（毛利率、库存天数、产能利用率）、云（积压订单、capex、云业务利润率）、网络和光模块（800G/1.6T 出货、大客户集中度）、电力（在手订单、装机）。\n  - 预案里拿不到的一致预期标“需补充”，不用历史增速外推的数字冒充预期。","line":166},"ZONES":{"title":"买点规则","body":"- 职责：把 Claude 的假设（前瞻 EPS、合理 PE 区间）和 [VAL]、[TECH] 的价位合成 A/B/C 三档、仓位、右侧信号和失效位。纯函数，不读写文件。\n- 代码目录：`src/stockdesk/zones/`\n- 调用：[VAL]、[TECH]\n- 验收：[AT-3]、[AT-4]、[AT-12]\n- 接口：\n\n```text\ncompute_zones(ticker, as_of, eps_fwd, pe_range, rules) -> ZonePlan | Refusal\n```\n\n- 要点：规则见第 4 节“买点规则”。每一档必须写锚点，锚点只能是 [TECH] 或 [VAL] 返回的某个具体数值。","line":185},"WATCH":{"title":"观察清单","body":"- 职责：保存每只股票当前的三档、失效位、依据、下次财报日，旧版本留历史；周五复盘时用最新周收盘对照，产出提醒列表。\n- 代码目录：`src/stockdesk/watch/`\n- 调用：[QA]、[ST-WATCH]\n- 验收：[AT-7]\n- 接口：\n\n```text\nsave(plan: ZonePlan, note) -> None\ncheck(as_of) -> list[Alert]     # Alert: ticker, kind, price, level, reason\n```\n\n- 要点：提醒只在“状态变化”时发出：新进入某一档、新跌破失效位、宏观信号翻转、财报日在 7 天内。与上周相同的状态不重复提醒。","line":199},"REPORT":{"title":"报告","body":"- 职责：先自查，再把财报包、买点和 Claude 写的解读（Markdown）合成一页 HTML，样式与现有 GOOGL、INTC 财报页一致；每个数字悬停可见来源和日期。\n- 代码目录：`src/stockdesk/report/`\n- 调用：[ST-REPORT]\n- 验收：[AT-6]\n- 出报告前自查（任何一条严重问题都拒绝生成，错误码 `SELF_REVIEW_FAILED`，附问题清单和修法）：\n  1. 解读正文里的数字都能在分析包里找到（否则 `UNSOURCED_NUMBER`）。\n  2. 解读里的 `pack_hash` 与当前财报包一致（否则 `STALE_NOTES`）。\n  3. 三档价格低于最新收盘且严格递减，仓位合计 100%。\n  4. “数据截至”是最近一个交易日。\n  5. 没有“基本面良好、前景广阔、值得关注”这类空话。\n  6. 估值视角和趋势视角结论相反时，正文里有“矛盾”一段。\n  7. 登记为确认缺失的字段显示为“—”并注明原因。\n- 要点：报告顶部固定写“数据截至”日期和“不构成投资建议”。","line":214},"VAL":{"title":"估值","body":"- 职责：给定前瞻 EPS 和 PE 区间，算出对应价格；提供近 3 年 PE 的分位数和同行 PE，供 Claude 和 [ZONES] 参考。\n- 代码目录：`src/stockdesk/valuation/`\n- 调用：[QA]\n- 验收：[AT-3]、[AT-12]\n- 要点：EPS 的货币与股价货币不同时（联想财报是美元、股价是港元），先按估值日的汇率换算，并在输出里写明汇率和来源。","line":230},"TECH":{"title":"技术位","body":"- 职责：从日线算 50 日线、200 日线、近一年被多次测试的支撑位、52 周高点及回撤 35%、40%、45% 的价位、最新日收盘和周收盘。\n- 代码目录：`src/stockdesk/technicals/`\n- 调用：[QA]\n- 验收：[AT-3]、[AT-12]\n- 要点：“多次测试的支撑”定义为近 250 个交易日里，日最低价落在同一 2% 区间内至少 3 次、且之后反弹超过 5% 的价位。","line":238},"QA":{"title":"数据守门","body":"- 职责：分析内核读数据的唯一通道。按调用方需要的字段清单，检查覆盖率、时效、来源一致性；通过则返回数据，不通过则返回拒绝、原因和缺口清单（每个缺失字段建议去哪个来源补）。\n- 代码目录：`src/stockdesk/qa/`\n- 调用：[ST-SNAP]\n- 验收：[AT-1]、[AT-2]、[AT-3]、[AT-4]、[AT-7]、[AT-11]、[AT-12]\n- 接口：\n\n```text\nrequire(ticker, fields, as_of) -> Dataset | Refusal\n# Refusal.code ∈ STALE_PRICE · DATA_INCOMPLETE · SOURCE_CONFLICT · NO_SNAPSHOT\n```\n\n- 要点：\n  - 各命令的必需字段见第 5 节，分“关键”和“非关键”。阈值写在配置文件里。\n  - 非关键字段登记为确认缺失后可以放行，报告里显示为缺失；关键字段（价格、营收、EPS、下季指引）不能登记跳过。","line":246},"ST-SNAP":{"title":"数据快照","body":"- 职责：`data/snapshots/\u003c代码>/\u003c日期>/` 下的 JSON 文件，格式见第 5 节。只追加，不覆盖。\n- 调用：无\n- 验收：[AT-1]、[AT-10]","line":263},"ST-WATCH":{"title":"观察清单文件","body":"- 职责：`data/watchlist.csv`（当前值）和 `data/watchlist-history.csv`（历史），列见第 5 节。\n- 调用：无\n- 验收：[AT-7]","line":269},"ST-REPORT":{"title":"报告归档","body":"- 职责：`reports/\u003c代码>/\u003c季度>/` 下的 HTML 报告和对应的分析包 JSON，方便事后复盘。\n- 调用：无\n- 验收：[AT-6]","line":275},"INV-1":{"title":"每个数字都带来源网址和数据日期","body":"- 检查：快照写入时校验 `source_url`、`as_of`、`fetched_at` 三个字段非空；报告里每个数字带来源属性。\n- 验收：[AT-1]、[AT-10]","line":367},"INV-2":{"title":"价格过期就不出买点和复盘结论","body":"- 检查：[QA] 用交易日历比较价格的 `as_of` 与上一个交易日；`zones` 和 `check` 遇到 `STALE_PRICE` 必须拒绝。\n- 验收：[AT-4]","line":372},"INV-3":{"title":"必需字段不全就不给结论，并说清缺什么","body":"- 检查：[QA] 按第 5 节的清单检查；拒绝信息里列出缺失字段名。\n- 验收：[AT-4]","line":377},"INV-4":{"title":"两个来源打架时两个值都列出，不悄悄挑一个","body":"- 检查：同一字段有两个来源且差异超过阈值时返回 `SOURCE_CONFLICT`，附两个值和两个网址。\n- 验收：[AT-4]","line":382},"INV-5":{"title":"模型不编数字","body":"- 检查：价位只由 [ZONES] 输出；[REPORT] 渲染前比对正文数字与分析包。\n- 验收：[AT-3]、[AT-6]","line":387},"INV-6":{"title":"每一档都有锚点和仓位，失效位按周收盘","body":"- 检查：`ZonePlan` 的数据模型要求每档有 `anchor`、`size`；失效位类型固定为 `weekly_close_below`。\n- 验收：[AT-3]","line":392},"INV-7":{"title":"GAAP 与 non-GAAP 分开，一次性项目单独标出","body":"- 检查：财报包模型里两种口径是独立字段；一次性项目规则见 [EARN]。\n- 验收：[AT-2]","line":397},"INV-8":{"title":"分析内核不联网","body":"- 检查：测试时禁用 socket，分析内核的全部测试必须在断网下通过；`make arch` 禁止内核引用网络库。\n- 验收：[AT-9]","line":402},"INV-9":{"title":"不接券商、不下单、不存账户凭据","body":"- 检查：依赖白名单里没有任何券商 SDK；代码里搜不到下单相关接口。\n- 验收：[AT-9]","line":407},"INV-10":{"title":"代码只允许图上的调用关系","body":"- 检查：`make arch` 检查所有 import，只允许图上画了“代码调用”箭头的方向。\n- 验收：[AT-9]","line":412},"INV-11":{"title":"解读必须对应当前数据","body":"- 检查：解读文件记录 `pack_hash`；[REPORT] 自查时与当前财报包比对，不一致返回 `STALE_NOTES`。\n- 验收：[AT-6]","line":417},"INV-13":{"title":"货币不同必须换算","body":"- 检查：[VAL] 比较 EPS 和股价的货币字段，不同时必须取到当日汇率，否则返回 `FX_MISSING`；输出里写明所用汇率和来源。\n- 验收：[AT-12]","line":422},"INV-12":{"title":"补不到的数据显示为缺失，不用默认值顶替","body":"- 检查：数据模型里缺失值是独立状态，不是 0 或空字符串；关键字段不接受缺失登记。\n- 验收：[AT-4]","line":427},"AT-1":{"title":"INTC Q3'26 财报包回放","body":"- 覆盖：[CLI]、[EARN]、[QA]、[ST-SNAP]\n- 步骤：`sd pack INTC --quarter 2026Q3 --replay intc-q3-2026`。\n- 通过标准：营收 16.5B（预期 16.47B），non-GAAP EPS 0.52（预期 0.40），GAAP EPS 0.60，non-GAAP 毛利率 44.1%；Q4 指引营收 15–16B（预期 17.08B）、EPS 0.25（预期 0.44）、毛利率 38%（预期 42.8%），三项都标为“低于预期”；每个字段带来源网址和日期。","line":436},"AT-2":{"title":"GOOGL Q3'26 一次性项目","body":"- 覆盖：[EARN]、[QA]\n- 步骤：用 `googl-q3-2026` 案例组装财报包。\n- 通过标准：GAAP EPS 2.12 与预期 3.02 并列，SpaceX 估值损失 −8.7B 被标为一次性项目，同时给出剔除后的营业利润；Cloud 营收 30.7B、积压订单 561B 正确。","line":442},"AT-3":{"title":"INTC 三档买点回放","body":"- 覆盖：[CLI]、[ZONES]、[VAL]、[TECH]、[QA]\n- 步骤：`sd zones INTC --replay intc-q3-2026 --eps 1.75 --pe 38-45`。\n- 通过标准：输出三档、右侧价、失效位；三档严格递减且低于最新价；仓位合计 100%；每档锚点能在 [TECH] 或 [VAL] 的输出里找到同一数值；与人工版本（A 70–74、B 60–64、C 48–52、失效 45）各档偏差不超过 5%，超出时测试打印差异原因供人工判断。","line":448},"AT-4":{"title":"数据守门：拒绝与缺口接管","body":"- 覆盖：[CLI]、[QA]、[ZONES]\n- 步骤：五个变体案例：价格停在 3 个交易日前；缺少下季指引；两个来源的收盘价差 2%；缺少同行 PE 且已登记确认缺失；缺少下季指引且试图登记跳过。\n- 通过标准：前三个分别返回 `STALE_PRICE`、`DATA_INCOMPLETE`（缺口清单里有“下季指引”和建议来源）、`SOURCE_CONFLICT`（列出两个值），都不输出任何价位；第四个放行，输出里同行 PE 为缺失状态而不是 0；第五个拒绝登记，提示这是关键字段。","line":454},"AT-5":{"title":"云端技能端到端（WebFetch 导入）","body":"- 覆盖：[SKILL]、[CLI]、[DATA]、[R-WEB]、[R-OUT]\n- 步骤：在云端会话里对 INTC 跑 `earnings-review` 技能。\n- 通过标准：`sd doctor` 识别出云端环境并提示走 WebFetch 导入；技能用 WebFetch 取数并成功 `sd import`；生成的快照格式与 Mac 抓取一致；最终报告页发布成功，报告里的“数据截至”是最近一个交易日。这是半自动验收，由你看报告页确认。","line":460},"AT-6":{"title":"出报告前自查","body":"- 覆盖：[CLI]、[REPORT]、[ST-REPORT]\n- 步骤：五份解读：一份完全合规；一份多写了一个“毛利率 41%”；一份的 `pack_hash` 是旧的；一份含“前景广阔”；一份估值说便宜、趋势已破位却没写矛盾。\n- 通过标准：只有第一份生成 HTML，每个数字带来源；其余四份分别返回 `UNSOURCED_NUMBER`（指出“41%”）、`STALE_NOTES`、`SELF_REVIEW_FAILED`（空话）、`SELF_REVIEW_FAILED`（缺矛盾段）；归档目录里只有第一份。","line":466},"AT-7":{"title":"观察清单与周五复盘","body":"- 覆盖：[CLI]、[WATCH]、[ST-WATCH]、[QA]\n- 步骤：观察清单里有 GOOGL、INTC、NVDA；用 `week-2026-10-30` 案例的周收盘复盘，再用同样数据复盘一次。\n- 通过标准：第一次只出两条提醒（进入某一档、跌破失效位），各带价格和原因；第二次没有提醒（状态没变）。","line":472},"AT-8":{"title":"定时触发只在有变化时提醒","body":"- 覆盖：[SCHED]、[SKILL]、[R-OUT]\n- 步骤：手动触发一次定时任务，分别在“有提醒”和“无提醒”两份数据上跑。\n- 通过标准：有提醒时项目里出现一条消息，列出股票、价格、触发的档位或失效位；无提醒时不发消息。","line":478},"AT-9":{"title":"代码与架构图一致、内核不联网","body":"- 覆盖：无（全局检查）\n- 通过标准：`make arch` 零违规；`node design/tools/build.mjs --check` 通过；断网下内核测试全部通过；依赖白名单检查通过。","line":484},"AT-10":{"title":"Mac 实时取数","body":"- 覆盖：[CLI]、[DATA]、[R-MKT]、[R-SEC]、[R-HKEX]、[R-MACRO]、[ST-SNAP]\n- 步骤：在你的 Mac 上运行 `sd fetch INTC` 和 `sd fetch 0992.HK`（标为 live 测试，不进日常检查）。\n- 通过标准：INTC 的价格、财报、一致预期、宏观四类字段齐全；0992 的价格、披露易最近一份业绩公告、美元兑港元汇率齐全；每个字段带来源；价格日期是各自市场最近一个交易日；与 stockanalysis 网页上的收盘价差异小于 1%。","line":489},"AT-11":{"title":"INTC 财报前预案回放","body":"- 覆盖：[CLI]、[EARN]、[QA]\n- 步骤：`sd preview INTC --quarter 2026Q3 --replay intc-q3-2026-pre`（数据截至 2026-10-28，财报前一天）。\n- 通过标准：一致预期表有营收 16.47B、EPS 0.40，每行带来源；半导体观察指标包含毛利率和库存；三种情景各有触发条件；历史财报后反应来自至少 8 次真实财报；缺一项一致预期时标“需补充”而不是外推。","line":495},"AT-12":{"title":"联想 0992 港股回放","body":"- 覆盖：[CLI]、[EARN]、[ZONES]、[VAL]、[TECH]、[QA]\n- 步骤：用 `lenovo-2026-10-29` 案例（数据截至 2026-10-28，含 FQ1 业绩公告、日线、汇率）先 `sd pack 0992.HK`，再 `sd zones 0992.HK --eps 2.7 --pe 8-11`。\n- 通过标准：财报包里 FQ1 营收 26.9B 美元（同比 +43%）、经调整净利润 1.075B 美元，来源是披露易公告；港股没有指引时不报 `DATA_INCOMPLETE`；估值输出写明汇率；[TECH] 算出的 200 日线在 19.1 港元附近；三档与人工版本（Z1 21.0–22.5、Z2 19.0–20.0、失效位周收盘 18.5）各档偏差不超过 5%；周收盘按香港交易日历取。","line":501},"SL-1":{"title":"能跑：INTC 财报包回放到报告","body":"- 目标：不联网，用 INTC 的固定案例跑出一份和现有 INTC 财报页同样结构的报告。\n- 亮起的流程：③④⑦\n- 内容：建项目骨架、公共数据模型、`tests/cases/intc-q3-2026/`；实现 [QA] 的读取和覆盖率检查、[EARN]、[REPORT]；Makefile 和架构检查。\n- 演示：`python -m stockdesk demo intc-q3-2026`\n- 验收：[AT-1]、[AT-6]、[AT-9]","line":511},"SL-2":{"title":"买点：三档规则和数据守门","body":"- 目标：同一个案例算出三档买点，并在数据有问题时正确拒绝。\n- 亮起的流程：⑥\n- 内容：[TECH]、[VAL]、[ZONES]、`config/rules.toml`；[QA] 补齐时效和冲突检查；加 GOOGL 案例；市场规则（港股日历、货币换算）和联想 0992 案例。\n- 演示：`python -m stockdesk zones INTC --replay intc-q3-2026 --eps 1.75 --pe 38-45`\n- 验收：[AT-2]、[AT-3]、[AT-4]、[AT-12]","line":519},"SL-3":{"title":"真数据：Mac 取数、云端导入、Claude 技能","body":"- 目标：接上美股和港股的真实数据，写好 `earnings-review` 和 `buy-zones` 两个技能。最好在 2026-11-19 联想发业绩前完成，用它做第一次实战。\n- 亮起的流程：②⑤\n- 内容：[DATA] 的 fetch 和 import（含披露易、AKShare）；来源登记和 `sd doctor`；技能文件；在云端和 Mac 各跑一次。\n- 演示：`python -m stockdesk fetch INTC`\n- 验收：[AT-10]、[AT-5]","line":527},"SL-4":{"title":"盯盘：观察清单、周五复盘、财报前预案、定时提醒","body":"- 目标：把现有的买点（主报告 30 只、GOOGL、INTC）放进观察清单，每周五自动复盘；财报前 3 天自动出预案。\n- 亮起的流程：①⑧⑨⑩\n- 内容：[WATCH]、[EARN] 的预案部分、`weekly-check` 和 `earnings-preview` 技能、定时任务。\n- 演示：`python -m stockdesk check --replay week-2026-10-30`\n- 验收：[AT-7]、[AT-8]、[AT-11]","line":535}},"checks":[{"id":"C0","title":"图本身没有断线","explain":"每根箭头两端的模块都存在，编号不重复；流程的时序图只引用存在的参与者。","ok":true,"problems":[]},{"id":"C1","title":"图上每个模块都有文字说明","explain":"每个方框在 SPEC.md 里都有一个同编号的章节。","ok":true,"problems":[]},{"id":"C2","title":"文字里没有图上不存在的东西","explain":"SPEC.md 中出现的每个编号都能在图上找到。","ok":true,"problems":[]},{"id":"C3","title":"文字写的调用关系与箭头完全一致","explain":"每个模块章节的\"调用\"一行，与图上从它出发的箭头逐一对应。","ok":true,"problems":[]},{"id":"C4","title":"验收场景的覆盖范围与图一致","explain":"模块章节的\"验收\"、验收章节的\"覆盖\"，都与 architecture.json 对得上。","ok":true,"problems":[]},{"id":"C5","title":"每条不变量都有检查方法和验收","explain":"\"绝不能发生的事\"都写明了用什么测试来证明。","ok":true,"problems":[]},{"id":"C6","title":"每个模块和每一步流程都有验收","explain":"图上没有\"写了但没人测\"的部分。","ok":true,"problems":[]},{"id":"C7","title":"每个验收都排进了施工切片","explain":"施工顺序覆盖全部验收场景，每个验收只在一个切片里。","ok":true,"problems":[]},{"id":"C8","title":"每个代码模块有独立目录","explain":"方框与代码目录一一对应，才能自动检查箭头。","ok":true,"problems":[]},{"id":"C10","title":"CLAUDE.md 指向的文件都存在","explain":"Claude Code 每次开工先读 CLAUDE.md，它指向的图和规格必须真实存在。","ok":true,"problems":[]},{"id":"C11","title":"每个切片都能跑通、能演示","explain":"切片亮起的流程都有验收证明，验收要跑的流程都已亮起，每个切片写明了演示命令。","ok":true,"problems":[]}],"moduleStatus":{"R-OUT":{"ok":true,"problems":[]},"SKILL":{"ok":true,"problems":[]},"SCHED":{"ok":true,"problems":[]},"CLI":{"ok":true,"problems":[]},"R-WEB":{"ok":true,"problems":[]},"R-MKT":{"ok":true,"problems":[]},"R-SEC":{"ok":true,"problems":[]},"R-HKEX":{"ok":true,"problems":[]},"R-MACRO":{"ok":true,"problems":[]},"DATA":{"ok":true,"problems":[]},"EARN":{"ok":true,"problems":[]},"ZONES":{"ok":true,"problems":[]},"WATCH":{"ok":true,"problems":[]},"REPORT":{"ok":true,"problems":[]},"VAL":{"ok":true,"problems":[]},"TECH":{"ok":true,"problems":[]},"QA":{"ok":true,"problems":[]},"ST-SNAP":{"ok":true,"problems":[]},"ST-WATCH":{"ok":true,"problems":[]},"ST-REPORT":{"ok":true,"problems":[]}},"edgeInfo":{"E1":{"inSpec":true,"guard":"test","ats":["AT-8"],"steps":[1],"rule":null},"E2":{"inSpec":true,"guard":"test","ats":["AT-5"],"steps":[2],"rule":null},"E3":{"inSpec":true,"guard":"test","ats":["AT-5"],"steps":[5],"rule":null},"E4":{"inSpec":true,"guard":"test","ats":["AT-5","AT-8"],"steps":[7],"rule":null},"E5":{"inSpec":true,"guard":"arch","ats":["AT-5","AT-10"],"steps":[2],"rule":"only-drawn-calls-CLI"},"E6":{"inSpec":true,"guard":"arch","ats":["AT-1","AT-11","AT-12"],"steps":[4,10],"rule":"only-drawn-calls-CLI"},"E7":{"inSpec":true,"guard":"arch","ats":["AT-3","AT-4","AT-12"],"steps":[6],"rule":"only-drawn-calls-CLI"},"E8":{"inSpec":true,"guard":"arch","ats":["AT-7"],"steps":[8],"rule":"only-drawn-calls-CLI"},"E9":{"inSpec":true,"guard":"arch","ats":["AT-6"],"steps":[7],"rule":"only-drawn-calls-CLI"},"E10":{"inSpec":true,"guard":"test","ats":["AT-10"],"steps":[2],"rule":null},"E11":{"inSpec":true,"guard":"test","ats":["AT-10"],"steps":[2],"rule":null},"E12":{"inSpec":true,"guard":"test","ats":["AT-10"],"steps":[2],"rule":null},"E13":{"inSpec":true,"guard":"test","ats":["AT-10"],"steps":[2],"rule":null},"E14":{"inSpec":true,"guard":"arch","ats":["AT-1","AT-2","AT-11","AT-12"],"steps":[4,10],"rule":"only-drawn-calls-EARN"},"E15":{"inSpec":true,"guard":"arch","ats":["AT-3","AT-12"],"steps":[6],"rule":"only-drawn-calls-ZONES"},"E16":{"inSpec":true,"guard":"arch","ats":["AT-3","AT-12"],"steps":[6],"rule":"only-drawn-calls-ZONES"},"E17":{"inSpec":true,"guard":"arch","ats":["AT-3","AT-12"],"steps":[6],"rule":"only-drawn-calls-VAL"},"E18":{"inSpec":true,"guard":"arch","ats":["AT-3","AT-12"],"steps":[6],"rule":"only-drawn-calls-TECH"},"E19":{"inSpec":true,"guard":"arch","ats":["AT-7"],"steps":[9],"rule":"only-drawn-calls-WATCH"},"E20":{"inSpec":true,"guard":"test","ats":["AT-7"],"steps":[8],"rule":null},"E21":{"inSpec":true,"guard":"test","ats":["AT-1"],"steps":[3],"rule":null},"E22":{"inSpec":true,"guard":"test","ats":["AT-6"],"steps":[7],"rule":null},"E23":{"inSpec":true,"guard":"test","ats":["AT-10"],"steps":[2],"rule":null}},"actual":null,"trace":null,"traceSource":null,"generatedAt":"2026-10-30T09:19:49.386Z"}</script>
+<script>(() => {
+  'use strict';
+  const D = JSON.parse(document.getElementById('bp-data').textContent);
+  const model = D.model;
+  const M = new Map(model.modules.map((m) => [m.id, m]));
+  const E = new Map(model.edges.map((e) => [e.id, e]));
+  const LAYER = new Map(model.layers.map((l) => [l.id, l]));
+  const KIND = new Map(model.edgeKinds.map((k) => [k.id, k]));
+  const INV = new Map(model.invariants.map((x) => [x.id, x]));
+  const AT = new Map(model.acceptance.map((x) => [x.id, x]));
+  const SL = new Map(model.slices.map((x) => [x.id, x]));
+  const STEP = new Map(model.flow.map((s) => [s.n, s]));
+  const FLOW = D.flowName || '流程';
+  const CIRCLED = ['', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+  const NS = 'http://www.w3.org/2000/svg';
+  // 本版改动：architecture.json 里的 revision 列出改了哪些模块、箭头、不变量、验收、切片
+  const REV = model.revision || null;
+  const revIds = new Set(REV ? REV.items.flatMap((it) => it.refs) : []);
+  const revNew = new Set(REV ? REV.added || [] : []);
+  const revKind = (id) => (revNew.has(id) ? '新' : revIds.has(id) ? '改' : '');
+  const revItems = (id) => (REV ? REV.items.filter((it) => it.refs.includes(id)) : []);
+  const state = { sel: null, step: 0, slice: '', actual: false, rev: !!REV };
+
+  // 每个模块在哪个切片新建（第一次被该切片的验收覆盖），每一步流程在哪个切片亮起
+  const sliceIndex = new Map(model.slices.map((x, i) => [x.id, i]));
+  const builtAt = new Map();
+  const litAt = new Map();
+  for (const sl of model.slices) {
+    for (const a of sl.ats) for (const m of (AT.get(a) || { covers: [] }).covers) if (!builtAt.has(m)) builtAt.set(m, sl.id);
+    for (const n of sl.steps) litAt.set(n, sl.id);
+  }
+  const sliceNo = (id) => sliceIndex.get(id) + 1;
+  const shortName = (sl) => sl.name.split('：')[0];
+  const circled = (ns) => ns.map((n) => CIRCLED[n]).join('');
+
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const known = (id) => M.has(id) || INV.has(id) || AT.has(id) || SL.has(id);
+  const refBtn = (id) => known(id)
+    ? `<button type="button" class="ref" data-ref="${esc(id)}">${esc(id)}</button>`
+    : `<span class="ref unknown" title="图上不存在">${esc(id)}</span>`;
+  const edgeBtn = (id) => `<button type="button" class="ref" data-edgeref="${esc(id)}">箭头 ${esc(id)}</button>`;
+  const anyRef = (id) => (E.has(id) ? edgeBtn(id) : refBtn(id));
+  const revChip = (id) => (revKind(id) ? `<span class="chip rev">本版${revNew.has(id) ? '新增' : '改动'}</span>` : '');
+  const revNote = (id) => {
+    const its = revItems(id);
+    return its.length ? `<div class="revision small"><ul>${its.map((it) => `<li>${esc(it.text)}</li>`).join('')}</ul></div>` : '';
+  };
+  const nameOf = (id) => (M.get(id) || INV.get(id) || AT.get(id) || SL.get(id) || {}).name || (INV.get(id) || {}).text || id;
+
+  // ---------- 简易 Markdown ----------
+  function inline(text) {
+    return text.split(/(`[^`]+`)/).map((part) => {
+      if (/^`[^`]+`$/.test(part)) return `<code>${esc(part.slice(1, -1))}</code>`;
+      let s = esc(part);
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/\[([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*)\]/g, (_, id) => refBtn(id));
+      return s;
+    }).join('');
+  }
+  function table(rows) {
+    const cells = (r) => r.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+    const head = cells(rows[0]);
+    const body = rows.slice(2).map(cells);
+    return `<div class="md-table"><table><thead><tr>${head.map((c) => `<th>${inline(c)}</th>`).join('')}</tr></thead><tbody>${body.map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+  function md(src) {
+    const lines = src.split('\n');
+    const out = [];
+    let i = 0;
+    const isBlockStart = (l) => /^\s*```|^\||^#{1,6} |^\s*[-*] |^\d+\. |^>/.test(l);
+    while (i < lines.length) {
+      const l = lines[i];
+      if (/^\s*```/.test(l)) {
+        const buf = [];
+        i += 1;
+        while (i < lines.length && !/^\s*```/.test(lines[i])) { buf.push(lines[i]); i += 1; }
+        i += 1;
+        out.push(`<pre><code>${esc(buf.join('\n'))}</code></pre>`);
+      } else if (/^\|/.test(l)) {
+        const rows = [];
+        while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i]); i += 1; }
+        out.push(table(rows));
+      } else if (/^#{1,6} /.test(l)) {
+        out.push(`<p><strong>${inline(l.replace(/^#+ /, ''))}</strong></p>`);
+        i += 1;
+      } else if (/^\s*[-*] /.test(l)) {
+        const items = [];
+        while (i < lines.length && (/^\s*[-*] /.test(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && !/^\s*```/.test(lines[i])))) {
+          if (/^\s*[-*] /.test(lines[i])) items.push({ depth: lines[i].match(/^\s*/)[0].length, text: lines[i].replace(/^\s*[-*] /, '') });
+          else items[items.length - 1].text += ' ' + lines[i].trim();
+          i += 1;
+        }
+        let html = '<ul>';
+        let depth = items.length ? items[0].depth : 0;
+        for (const it of items) {
+          if (it.depth > depth) html += '<ul>';
+          if (it.depth < depth) html += '</ul>';
+          depth = it.depth;
+          html += `<li>${inline(it.text)}</li>`;
+        }
+        if (depth > (items[0] ? items[0].depth : 0)) html += '</ul>';
+        out.push(html + '</ul>');
+      } else if (/^\d+\. /.test(l)) {
+        const items = [];
+        while (i < lines.length && /^\d+\. /.test(lines[i])) { items.push(lines[i].replace(/^\d+\. /, '')); i += 1; }
+        out.push(`<ol>${items.map((t) => `<li>${inline(t)}</li>`).join('')}</ol>`);
+      } else if (/^>/.test(l)) {
+        const buf = [];
+        while (i < lines.length && /^>/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i += 1; }
+        out.push(`<blockquote>${md(buf.join('\n'))}</blockquote>`);
+      } else if (!l.trim()) {
+        i += 1;
+      } else {
+        const buf = [];
+        while (i < lines.length && lines[i].trim() && !isBlockStart(lines[i])) { buf.push(lines[i].trim()); i += 1; }
+        out.push(`<p>${inline(buf.join(' '))}</p>`);
+      }
+    }
+    return out.join('');
+  }
+
+  // ---------- 几何 ----------
+  const center = (m) => [m.box.x + m.box.w / 2, m.box.y + m.box.h / 2];
+  function clip(m, toward) {
+    const [cx, cy] = center(m);
+    const dx = toward[0] - cx;
+    const dy = toward[1] - cy;
+    if (!dx && !dy) return [cx, cy];
+    const t = Math.min(dx ? m.box.w / 2 / Math.abs(dx) : Infinity, dy ? m.box.h / 2 / Math.abs(dy) : Infinity);
+    return [cx + dx * t, cy + dy * t];
+  }
+  function pointsOf(e) {
+    if (e.path) return e.path;
+    const a = M.get(e.from);
+    const b = M.get(e.to);
+    return [clip(a, center(b)), clip(b, center(a))];
+  }
+  function midpoint(pts) {
+    const segs = [];
+    let total = 0;
+    for (let i = 1; i < pts.length; i += 1) {
+      const len = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+      segs.push(len);
+      total += len;
+    }
+    let half = total / 2;
+    for (let i = 0; i < segs.length; i += 1) {
+      if (half <= segs[i]) {
+        const t = segs[i] ? half / segs[i] : 0;
+        return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * t, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t];
+      }
+      half -= segs[i];
+    }
+    return pts[pts.length - 1];
+  }
+  const d = (pts) => pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+
+  function el(name, attrs, parent) {
+    const node = document.createElementNS(NS, name);
+    for (const [k, v] of Object.entries(attrs || {})) if (v !== undefined && v !== null) node.setAttribute(k, v);
+    if (parent) parent.appendChild(node);
+    return node;
+  }
+  function text(parent, x, y, str, cls, anchor) {
+    const t = el('text', { x, y, class: cls, 'text-anchor': anchor || 'start' }, parent);
+    t.textContent = str;
+    return t;
+  }
+
+  // ---------- 画图 ----------
+  const svg = document.getElementById('diagram');
+  const edgeNodes = new Map();
+  const modNodes = new Map();
+  const badgeNodes = new Map();
+  let extraLayer = null;
+
+  function drawDiagram() {
+    const { w, h } = model.canvas;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    const defs = el('defs', {}, svg);
+    for (const [id, cls] of [['arr', 'mk'], ['arr-hl', 'mk-hl'], ['arr-ok', 'mk-ok'], ['arr-bad', 'mk-bad'], ['arr-miss', 'mk-miss'], ['arr-rev', 'mk-rev']]) {
+      const mk = el('marker', { id, viewBox: '0 0 10 10', refX: 9.5, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+      el('path', { d: 'M0,0 L10,5 L0,10 z', class: cls }, mk);
+    }
+    for (const r of model.regions) {
+      const g = el('g', { class: 'region' }, svg);
+      el('rect', { x: r.x, y: r.y, width: r.w, height: r.h, rx: 10 }, g);
+      text(g, r.x + 14, r.y + 22, r.name);
+      (r.notes || []).forEach((n, i) => text(g, r.x + 14, r.y + 42 + i * 18, n, 'note'));
+    }
+    for (const l of model.labels || []) text(svg, l.x, l.y, l.text, l.small ? 'row-label' : 'row-label big');
+    if (model.boundary) {
+      const b = model.boundary;
+      const g = el('g', { class: 'boundary' }, svg);
+      el('line', { x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2 }, g);
+      text(g, b.labelX, b.labelY, b.label);
+    }
+    const edgeLayer = el('g', {}, svg);
+    for (const e of model.edges) {
+      const info = D.edgeInfo[e.id];
+      const g = el('g', { class: `edge kind-${e.kind}${info.inSpec ? '' : ' not-in-spec'}`, 'data-edge': e.id }, edgeLayer);
+      const pts = pointsOf(e);
+      el('path', { d: d(pts), class: 'ln', 'marker-end': `url(#${info.inSpec ? 'arr' : 'arr-bad'})` }, g);
+      el('path', { d: d(pts), class: 'hit' }, g);
+      const title = el('title', {}, g);
+      title.textContent = `${nameOf(e.from)} → ${nameOf(e.to)}：${e.label}`;
+      g.addEventListener('click', () => select({ type: 'edge', id: e.id }));
+      edgeNodes.set(e.id, g);
+    }
+    extraLayer = el('g', {}, svg);
+    for (const m of model.modules) {
+      const st = D.moduleStatus[m.id];
+      const g = el('g', { class: `mod layer-${m.layer}${st.ok ? '' : ' has-problem'}`, tabindex: 0, role: 'button', 'aria-label': `${m.name}（${m.id}）`, 'data-mod': m.id }, svg);
+      const b = m.box;
+      el('rect', { class: 'box', x: b.x, y: b.y, width: b.w, height: b.h, rx: 7 }, g);
+      const cx = b.x + b.w / 2;
+      if (b.h < 40) {
+        text(g, cx, b.y + b.h / 2 + 5, m.name, 'name', 'middle');
+      } else if (b.h < 50) {
+        text(g, cx, b.y + b.h / 2 + 5, `${m.name}　·　${m.sub}${m.dir ? '　·　' + m.dir : ''}`, 'name', 'middle');
+      } else {
+        const top = b.y + (b.h - 46) / 2;
+        text(g, cx, top + 14, m.name, 'name', 'middle');
+        text(g, cx, top + 31, m.sub, 'sub', 'middle');
+        if (m.dir) text(g, cx, top + 45, m.dir, 'dir', 'middle');
+      }
+      const bx = b.x + b.w - 2;
+      const by = b.y + 2;
+      if (revKind(m.id)) {
+        const tg = el('g', { class: 'rev-tag' }, g);
+        el('rect', { x: b.x - 6, y: b.y - 8, width: 20, height: 15, rx: 4 }, tg);
+        text(tg, b.x + 4, b.y + 3.5, revKind(m.id), '', 'middle');
+      }
+      el('circle', { cx: bx, cy: by, r: 7, class: st.ok ? 'badge-ok' : 'badge-bad' }, g);
+      text(g, bx, by + 3.5, st.ok ? '✓' : '!', 'badge-mark', 'middle');
+      const title = el('title', {}, g);
+      title.textContent = st.ok ? `${m.name}：文字与图一致` : `${m.name}：${st.problems.length} 处不一致`;
+      g.addEventListener('click', () => select({ type: 'module', id: m.id }));
+      g.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select({ type: 'module', id: m.id }); } });
+      modNodes.set(m.id, g);
+    }
+    for (const s of model.flow) {
+      const e = E.get(s.badgeEdge);
+      if (!e) continue;
+      const [x, y] = midpoint(pointsOf(e));
+      const g = el('g', { class: 'step-badge', 'data-step': s.n }, svg);
+      el('circle', { cx: x, cy: y, r: 10 }, g);
+      text(g, x, y + 4, String(s.n), '', 'middle');
+      const title = el('title', {}, g);
+      title.textContent = `第 ${s.n} 步：${s.title}`;
+      g.addEventListener('click', () => setStep(s.n));
+      badgeNodes.set(s.n, g);
+    }
+  }
+
+  function legend() {
+    const box = document.getElementById('legend');
+    const items = [];
+    const dash = { call: '', load: '6 3 1.5 3', spawn: '5 4', external: '1.5 3.5' };
+    for (const k of model.edgeKinds) {
+      items.push(`<span><svg width="30" height="10" aria-hidden="true"><line x1="0" y1="5" x2="30" y2="5" stroke="currentColor" stroke-width="2" stroke-dasharray="${dash[k.id] || ''}"/></svg>${esc(k.name)}</span>`);
+    }
+    for (const l of model.layers) {
+      items.push(`<span><i class="swatch" style="background:var(--lc-${l.id});border-color:var(--lc-${l.id}-s)"></i>${esc(l.name)}</span>`);
+    }
+    items.push('<span><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--ok)"/></svg>文字与图一致</span>');
+    items.push('<span><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--bad)"/></svg>有偏差</span>');
+    box.innerHTML = items.join('');
+  }
+
+  // ---------- 高亮 ----------
+  // 切片视图：new = 本切片新建，built = 之前的切片已建，future = 之后的切片才建
+  function sliceState(modId) {
+    const at = builtAt.get(modId);
+    if (!state.slice || !at) return state.slice ? 'future' : '';
+    const d = sliceIndex.get(at) - sliceIndex.get(state.slice);
+    return d === 0 ? 'new' : d < 0 ? 'built' : 'future';
+  }
+  function applyHighlight() {
+    const step = state.step ? STEP.get(state.step) : null;
+    // 本版改动只在没有选流程、切片、代码对比时显示，免得几种颜色叠在一起
+    const showRev = state.rev && !state.step && !state.slice && !state.actual;
+    svg.classList.toggle('show-rev', showRev);
+    const stepEdges = new Set(step ? step.edges : []);
+    const stepMods = new Set();
+    for (const id of stepEdges) { const e = E.get(id); stepMods.add(e.from); stepMods.add(e.to); }
+    const sl = state.slice ? SL.get(state.slice) : null;
+    const edgeSlice = (e) => {
+      const a = sliceState(e.from);
+      const b = sliceState(e.to);
+      if (a === 'future' || b === 'future') return 'dim';
+      return a === 'new' || b === 'new' ? 'hl' : '';
+    };
+    for (const [id, g] of edgeNodes) {
+      const info = D.edgeInfo[id];
+      const es = sl ? edgeSlice(E.get(id)) : '';
+      g.classList.toggle('hl', (!!step && stepEdges.has(id)) || es === 'hl');
+      g.classList.toggle('dim', (!!step && !stepEdges.has(id)) || es === 'dim');
+      g.classList.toggle('selected', state.sel && state.sel.type === 'edge' && state.sel.id === id);
+      g.classList.remove('act-ok', 'act-missing');
+      g.classList.toggle('rev-on', revIds.has(id));
+      let marker = info.inSpec ? 'arr' : 'arr-bad';
+      if (showRev && revIds.has(id)) marker = 'arr-rev';
+      if (state.actual && D.actual) {
+        const st = D.actual.edgeStatus[id];
+        if (st === 'ok') { g.classList.add('act-ok'); marker = 'arr-ok'; }
+        if (st === 'missing') { g.classList.add('act-missing'); marker = 'arr-miss'; }
+      }
+      if ((step && stepEdges.has(id)) || es === 'hl' || (state.sel && state.sel.type === 'edge' && state.sel.id === id)) marker = 'arr-hl';
+      g.querySelector('.ln').setAttribute('marker-end', `url(#${marker})`);
+    }
+    for (const [id, g] of modNodes) {
+      const ms = sl ? sliceState(id) : '';
+      g.classList.toggle('dim', (!!step && !stepMods.has(id)) || ms === 'future');
+      g.classList.toggle('hl', !!step && stepMods.has(id));
+      g.classList.toggle('sl-new', ms === 'new');
+      g.classList.toggle('rev-on', revIds.has(id));
+      g.classList.toggle('selected', state.sel && state.sel.type === 'module' && state.sel.id === id);
+    }
+    for (const [n, g] of badgeNodes) {
+      const lit = litAt.get(n);
+      const notYet = !!sl && (!lit || sliceIndex.get(lit) > sliceIndex.get(sl.id));
+      g.classList.toggle('dim', (!!step && n !== state.step) || notYet);
+    }
+    extraLayer.innerHTML = '';
+    if (state.actual && D.actual) {
+      for (const x of D.actual.extra) {
+        const a = M.get(x.from);
+        const b = M.get(x.to);
+        const g = el('g', { class: 'edge act-extra' }, extraLayer);
+        el('path', { d: d([clip(a, center(b)), clip(b, center(a))]), class: 'ln', 'marker-end': 'url(#arr-bad)' }, g);
+        const title = el('title', {}, g);
+        title.textContent = `图上没有的调用：${x.from} → ${x.to}`;
+      }
+    }
+    document.querySelectorAll('#steps button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.step) === state.step && !(state.step === 0 && state.slice))));
+    document.querySelectorAll('#slices button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.slice === state.slice)));
+    const t = document.getElementById('actual-toggle');
+    t.setAttribute('aria-pressed', String(state.actual));
+    const rt = document.getElementById('rev-toggle');
+    if (rt) rt.setAttribute('aria-pressed', String(showRev));
+  }
+
+  // ---------- 右侧面板 ----------
+  const panel = document.getElementById('panel');
+  function sectionHtml(id) {
+    const s = D.sections[id];
+    if (!s) return '<div class="problems">SPEC.md 里没有这一节。</div>';
+    return `<p class="spec-src">SPEC.md 第 ${s.line} 行起的原文</p><div class="md">${md(s.body)}</div>`;
+  }
+  function edgeLine(e, dir) {
+    const other = dir === 'out' ? e.to : e.from;
+    return `<li>${dir === 'out' ? '→' : '←'} ${refBtn(other)} ${esc(nameOf(other))} <span class="via">· ${esc(e.label)}</span></li>`;
+  }
+  function overview() {
+    const failed = D.checks.filter((c) => !c.ok);
+    const okCount = D.checks.length - failed.length;
+    const revHtml = REV ? `<div class="revision">
+        <h3>这一版改了什么（${esc(REV.from)} → ${esc(REV.version)}）</h3>
+        <p><strong>${esc(REV.title)}</strong></p>
+        <ol>${REV.items.map((it) => `<li>${esc(it.text)}<div class="rev-refs">${it.refs.map(anyRef).join(' ')}</div></li>`).join('')}</ol>
+        <p class="spec-src">图上橙色虚线框、橙色箭头和"新""改"标记就是这些改动。点上方"标出本版改动"可以关掉。</p>
+      </div>` : '';
+    return `${revHtml}<h2>如何审阅</h2>
+      <div class="big-status ${failed.length ? 'bad' : 'ok'}"><strong>${okCount}/${D.checks.length}</strong><span>项一致性检查通过</span></div>
+      <ol class="howto">
+        <li>看图：每个方框右上角都应是绿色对勾。红色感叹号表示文字和图对不上，点开能看到具体哪里不一致。</li>
+        <li>点方框：右侧显示 SPEC.md 里这个模块的原文，以及图上它调用谁、被谁调用、由哪些验收场景证明。只需判断原文和你心里的设计是否一致。</li>
+        <li>点上方 ① 到 ${CIRCLED[model.flow.length]}：图上会只亮出这一步经过的模块和箭头，用来核对${esc(FLOW)}。</li>
+        <li>点上方"切片 1"到"切片 ${model.slices.length}"：蓝色粗框是这个切片新建的模块，淡色是后面的切片才做的。每个切片做完都能跑一条演示命令。</li>
+        <li>施工后：打开"对比实际代码"，绿色是代码已按图实现，灰色虚线是还没实现，红色是图上没有的多余调用。</li>
+      </ol>
+      <h3>图上有</h3>
+      <div class="chips"><span class="chip">${model.modules.length} 个模块</span><span class="chip">${model.edges.length} 根箭头</span><span class="chip">${model.invariants.length} 条不变量</span><span class="chip">${model.acceptance.length} 个验收场景</span><span class="chip">${model.slices.length} 个施工切片</span></div>`;
+  }
+  function modulePanel(id) {
+    const m = M.get(id);
+    const st = D.moduleStatus[id];
+    const outs = model.edges.filter((e) => e.from === id);
+    const ins = model.edges.filter((e) => e.to === id);
+    const ats = model.acceptance.filter((a) => a.covers.includes(id));
+    const invs = model.invariants.filter((inv) => inv.verifiedBy.some((a) => ats.some((x) => x.id === a)));
+    return `<h2>${esc(m.name)}</h2>
+      <p class="idline">${esc(m.id)} · ${esc(LAYER.get(m.layer).name)} · ${esc(m.owner)}${m.dir ? ' · ' + esc(m.dir) : ''}</p>
+      <div class="chips">
+        <span class="chip ${D.sections[id] ? 'ok' : 'bad'}">${D.sections[id] ? '✓ 有规格章节' : '✗ 缺规格章节'}</span>
+        <span class="chip ${st.ok ? 'ok' : 'bad'}">${st.ok ? '✓ 文字与图一致' : `✗ ${st.problems.length} 处不一致`}</span>
+        <span class="chip ${ats.length ? 'ok' : 'bad'}">${ats.length ? `✓ ${ats.length} 个验收覆盖` : '✗ 没有验收'}</span>
+        ${builtAt.has(id) ? `<span class="chip">在 ${refBtn(builtAt.get(id))} 新建</span>` : ''}
+        ${revChip(id)}
+      </div>
+      ${revNote(id)}
+      ${st.ok ? '' : `<div class="problems"><ul>${st.problems.map((p) => `<li>${inline(p)}</li>`).join('')}</ul></div>`}
+      <h3>图上：它调用</h3>
+      ${outs.length ? `<ul class="links">${outs.map((e) => edgeLine(e, 'out')).join('')}</ul>` : '<p class="spec-src">不调用其他模块</p>'}
+      <h3>图上：谁调用它</h3>
+      ${ins.length ? `<ul class="links">${ins.map((e) => edgeLine(e, 'in')).join('')}</ul>` : '<p class="spec-src">没有调用方</p>'}
+      <h3>由这些验收证明</h3>
+      ${ats.length ? `<ul class="links">${ats.map((a) => `<li>${refBtn(a.id)} ${esc(a.name)}</li>`).join('')}</ul>` : '<p class="spec-src">无</p>'}
+      ${invs.length ? `<h3>相关不变量</h3><ul class="links">${invs.map((x) => `<li>${refBtn(x.id)} ${esc(x.text)}</li>`).join('')}</ul>` : ''}
+      <h3>规格原文</h3>
+      ${sectionHtml(id)}`;
+  }
+  function edgePanel(id) {
+    const e = E.get(id);
+    const info = D.edgeInfo[id];
+    const kind = KIND.get(e.kind);
+    let actualLine = '';
+    if (D.actual && D.actual.edgeStatus[id]) {
+      actualLine = D.actual.edgeStatus[id] === 'ok'
+        ? '<span class="chip ok">✓ 代码里已有这条调用</span>'
+        : '<span class="chip">代码里还没有这条调用</span>';
+    }
+    return `<h2>${esc(nameOf(e.from))} → ${esc(nameOf(e.to))}</h2>
+      <p class="idline">${esc(e.id)} · ${esc(kind ? kind.name : e.kind)}</p>
+      <p>${esc(e.label)}</p>
+      <div class="chips">
+        <span class="chip ${info.inSpec ? 'ok' : 'bad'}">${info.inSpec ? '✓ 文字里写了这条调用' : '✗ 文字里没写这条调用'}</span>
+        ${actualLine}
+        ${revChip(id)}
+      </div>
+      ${revNote(id)}
+      <h3>怎么保证代码照此实现</h3>
+      <p>${info.guard === 'arch'
+        ? `依赖检查规则 <code>${esc(info.rule || '')}</code>：<code>${esc(D.archCommand || '架构检查')}</code> 会拒绝图上没画的 import。`
+        : '这类关系不是 import，由运行时测试证明：'}</p>
+      ${info.ats.length ? `<ul class="links">${info.ats.map((a) => `<li>${refBtn(a)} ${esc(AT.get(a).name)}</li>`).join('')}</ul>` : ''}
+      ${info.steps.length ? `<h3>属于${esc(FLOW)}</h3><ul class="links">${info.steps.map((n) => `<li><button type="button" class="ref" data-step="${n}">${CIRCLED[n]}</button> ${esc(STEP.get(n).title)}</li>`).join('')}</ul>` : ''}
+      <h3>两端模块</h3>
+      <ul class="links"><li>${refBtn(e.from)} ${esc(nameOf(e.from))}</li><li>${refBtn(e.to)} ${esc(nameOf(e.to))}</li></ul>`;
+  }
+  // ---------- 协议时序：flow 里某一步可选的 detail 和 sequence ----------
+  const SEQ_KIND = {
+    spawn: '启动进程',
+    request: '请求（要回复）',
+    response: '回复',
+    notify: '通知（不回复）',
+    local: '进程内调用或非协议交互',
+  };
+  const SEQ_H = 22;
+  const SEQ_Y = 11;
+  function seqArrow(x1, x2, kind, w) {
+    let g = '';
+    if (x1 === x2) {
+      // 自己做的事：在生命线右侧画一个小回环
+      g = `<path class="seq-ln" d="M${x1},5 h16 v12 h-9"/><path class="seq-head" d="M${x1 + 1},17 l7,-4 v8 z"/>`;
+    } else {
+      const dir = x2 > x1 ? 1 : -1;
+      const tip = x2 - dir * 1.5;
+      const base = x2 - dir * 9;
+      g = `<line class="seq-ln" x1="${x1}" y1="${SEQ_Y}" x2="${base + dir}" y2="${SEQ_Y}"/>`;
+      g += kind === 'notify'
+        ? `<path class="seq-head open" d="M${base},${SEQ_Y - 4.5} L${tip},${SEQ_Y} L${base},${SEQ_Y + 4.5}"/>`
+        : `<path class="seq-head" d="M${tip},${SEQ_Y} L${base},${SEQ_Y - 4.5} L${base},${SEQ_Y + 4.5} z"/>`;
+      if (kind === 'spawn') g += `<circle class="seq-head" cx="${x1}" cy="${SEQ_Y}" r="3"/>`;
+    }
+    return `<svg class="seq-arrow k-${kind}" width="${w}" height="${SEQ_H}" aria-hidden="true">${g}</svg>`;
+  }
+  function seqHtml(seq) {
+    const parts = seq.participants;
+    const gap = parts.length <= 3 ? 56 : parts.length === 4 ? 50 : 44;
+    const pad = 24;
+    const w = pad * 2 + gap * (parts.length - 1);
+    const X = new Map(parts.map((p, i) => [p.id, pad + i * gap]));
+    const label = (p) => p.name || (M.get(p.id) || {}).name || p.id;
+    const head = parts.map((p) => {
+      const m = M.get(p.id);
+      const style = m ? ` style="background:var(--lc-${m.layer});border-color:var(--lc-${m.layer}-s)"` : '';
+      return `<span class="seq-p${m ? '' : ' ext'}"${style} title="${esc(m ? `${p.id} · ${m.name}` : label(p))}">${esc(label(p))}</span>`;
+    });
+    const lanes = `<div class="seq-lanes" style="width:${w}px">${head.map((h, i) => `<div class="seq-pcell" style="left:${pad + i * gap}px">${h}</div>`).join('')}</div>`;
+    const life = `<svg class="seq-life" width="${w}" aria-hidden="true">${parts.map((p) => `<line x1="${X.get(p.id)}" x2="${X.get(p.id)}" y1="0" y2="100%"/>`).join('')}</svg>`;
+    let no = 0;
+    const rows = seq.messages.map((msg) => {
+      if (msg.section) return `<li class="seq-sec">${inline(msg.section)}</li>`;
+      no += 1;
+      return `<li class="seq-row k-${msg.kind}">${seqArrow(X.get(msg.from), X.get(msg.to), msg.kind, w)}<div class="seq-msg"><span class="seq-no">${no}</span><div><div class="seq-text">${inline(msg.text)}</div>${msg.note ? `<div class="seq-note">${inline(msg.note)}</div>` : ''}</div></div></li>`;
+    }).join('');
+    const kinds = [...new Set(seq.messages.filter((x) => !x.section).map((x) => x.kind))];
+    const kindLegend = kinds.map((k) => `<span>${seqArrow(4, 34, k, 40).replace('class="seq-arrow', 'class="seq-arrow mini')}${esc(SEQ_KIND[k] || k)}</span>`).join('');
+    const who = parts.filter((p) => M.has(p.id)).map((p) => `<li>${esc(label(p))} = ${refBtn(p.id)} ${esc(M.get(p.id).name)}</li>`).join('');
+    return `<div class="seq" style="--seq-w:${w}px">
+        <div class="seq-headrow">${lanes}<div></div></div>
+        <div class="seq-wrap">${life}<ol class="seq-body">${rows}</ol></div>
+      </div>
+      <div class="seq-legend">${kindLegend}</div>
+      ${who ? `<ul class="links seq-who">${who}</ul>` : ''}`;
+  }
+  const detailHtml = (s) => (s.detail ? [].concat(s.detail).map((p) => `<p class="step-detail">${inline(p)}</p>`).join('') : '');
+
+  function stepPanel(n) {
+    const s = STEP.get(n);
+    const ats = model.acceptance.filter((a) => a.flowSteps.includes(n));
+    let traceHtml = '';
+    if (D.trace) {
+      const seen = [...new Set(D.trace.filter((ev) => ev.step === n).map((ev) => ev.module))];
+      const expected = [...new Set(s.edges.flatMap((id) => [E.get(id).from, E.get(id).to]))];
+      const missing = expected.filter((x) => !seen.includes(x));
+      const later = (x) => builtAt.has(x) && D.trace.every((ev) => ev.module !== x) ? `（${refBtn(builtAt.get(x))} 才建）` : '';
+      // 轨迹来自哪个切片的验收；后续切片才建的模块没经过是正常的
+      const srcSlice = model.slices.find((sl) => sl.ats.includes(D.traceSource));
+      const srcIdx = srcSlice ? sliceIndex.get(srcSlice.id) : Infinity;
+      const notYet = (x) => builtAt.has(x) && sliceIndex.get(builtAt.get(x)) > srcIdx;
+      const realMissing = missing.filter((x) => !notYet(x));
+      const chip = realMissing.length
+        ? `<span class="chip bad">✗ 还有 ${realMissing.length} 个模块没经过</span>`
+        : missing.length
+          ? `<span class="chip ok">✓ 当前切片该经过的都经过了</span><span class="chip">${missing.length} 个模块在后续切片</span>`
+          : '<span class="chip ok">✓ 与图一致</span>';
+      traceHtml = `<h3>实际运行轨迹${D.traceSource ? `（来自 ${refBtn(D.traceSource)}）` : ''}</h3>
+        <div class="chips">${chip}</div>
+        <p>${seen.length ? seen.map(refBtn).join(' → ') : '这一步没有记录到事件'}</p>
+        ${missing.length ? `<p class="spec-src">没经过：${missing.map((x) => refBtn(x) + later(x)).join(' ')}</p>` : ''}`;
+    }
+    return `<h2>${CIRCLED[n]} ${esc(s.title)}</h2>
+      <p class="idline">${esc(FLOW)}第 ${n} 步${litAt.has(n) ? ` · 在 ${refBtn(litAt.get(n))} 亮起` : ''}</p>
+      ${detailHtml(s)}
+      ${s.sequence ? `<h3>${esc(s.sequence.title || '协议时序')}</h3>${seqHtml(s.sequence)}` : ''}
+      <h3>经过的箭头</h3>
+      <ul class="links">${s.edges.map((id) => { const e = E.get(id); return `<li>${refBtn(e.from)} → ${refBtn(e.to)} <span class="via">· ${esc(e.label)}</span></li>`; }).join('')}</ul>
+      <h3>由这些验收证明</h3>
+      ${ats.length ? `<ul class="links">${ats.map((a) => `<li>${refBtn(a.id)} ${esc(a.name)}</li>`).join('')}</ul>` : '<div class="problems">没有验收覆盖这一步</div>'}
+      ${traceHtml || '<p class="spec-src">施工完成并跑过 AT-1 后，这里会显示实际运行轨迹，用来和图对比。</p>'}`;
+  }
+  function docPanel(id) {
+    const inv = INV.get(id);
+    const at = AT.get(id);
+    let head = '';
+    if (inv) head = `<h2>${esc(inv.text)}</h2><p class="idline">${esc(id)} · 不变量</p><div class="chips">${inv.verifiedBy.map((a) => `<span class="chip">由 ${refBtn(a)} 证明</span>`).join('')}</div>`;
+    if (at) head = `<h2>${esc(at.name)}</h2><p class="idline">${esc(id)} · 验收场景</p><div class="chips">${at.covers.length ? `<span class="chip">覆盖 ${at.covers.length} 个模块</span>` : '<span class="chip">全局检查</span>'}${at.flowSteps.length ? `<span class="chip">覆盖流程 ${at.flowSteps.map((n) => CIRCLED[n]).join('')}</span>` : ''}</div>`;
+    return `${head}${revChip(id) ? `<div class="chips">${revChip(id)}</div>${revNote(id)}` : ''}<h3>规格原文</h3>${sectionHtml(id)}`;
+  }
+  function slicePanel(id) {
+    const sl = SL.get(id);
+    const idx = sliceIndex.get(id);
+    const newMods = model.modules.filter((m) => builtAt.get(m.id) === id);
+    const litSoFar = model.flow.filter((s) => litAt.has(s.n) && sliceIndex.get(litAt.get(s.n)) <= idx);
+    return `<h2>${esc(sl.name)}</h2>
+      <p class="idline">${esc(id)} · 第 ${idx + 1} 个切片，共 ${model.slices.length} 个</p>
+      <div class="chips">
+        <span class="chip">新建 ${newMods.length} 个模块</span>
+        <span class="chip">${sl.steps.length ? `新亮起 ${circled(sl.steps)}` : '不新增流程'}</span>
+        <span class="chip">流程已亮 ${litSoFar.length}/${model.flow.length}</span>
+        ${revChip(id)}
+      </div>
+      ${revNote(id)}
+      <p class="spec-src">图上：蓝色粗框是这个切片新建的模块，正常显示的是之前切片已建好的，淡色是后面的切片才做的。</p>
+      <h3>做完后跑这条命令看结果</h3>
+      <pre class="demo"><code>${esc(sl.demo)}</code></pre>
+      <h3>由这些验收证明</h3>
+      <ul class="links">${sl.ats.map((a) => `<li>${refBtn(a)} ${esc(AT.get(a).name)}</li>`).join('')}</ul>
+      <h3>这个切片新建的模块</h3>
+      ${newMods.length ? `<ul class="links">${newMods.map((m) => `<li>${refBtn(m.id)} ${esc(m.name)}</li>`).join('')}</ul>` : '<p class="spec-src">不新建模块，只加固已有模块</p>'}
+      <h3>规格原文</h3>
+      ${sectionHtml(id)}`;
+  }
+  function renderPanel() {
+    let html;
+    if (state.sel && state.sel.type === 'module') html = modulePanel(state.sel.id);
+    else if (state.sel && state.sel.type === 'edge') html = edgePanel(state.sel.id);
+    else if (state.sel && state.sel.type === 'doc') html = docPanel(state.sel.id);
+    else if (state.step) html = stepPanel(state.step);
+    else if (state.slice) html = slicePanel(state.slice);
+    else html = overview();
+    const back = state.sel || state.step || state.slice ? '<p><button type="button" class="ref" data-home="1">← 返回审阅说明</button></p>' : '';
+    panel.innerHTML = back + html;
+    panel.scrollTop = 0;
+  }
+  panel.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button');
+    if (!btn) return;
+    if (btn.dataset.home) { state.sel = null; state.step = 0; state.slice = ''; }
+    else if (btn.dataset.step) { state.sel = null; state.slice = ''; state.step = Number(btn.dataset.step); }
+    else if (btn.dataset.edgeref) state.sel = { type: 'edge', id: btn.dataset.edgeref };
+    else if (btn.dataset.ref) {
+      const id = btn.dataset.ref;
+      if (SL.has(id)) { state.sel = null; state.step = 0; state.slice = id; }
+      else state.sel = M.has(id) ? { type: 'module', id } : { type: 'doc', id };
+    }
+    applyHighlight();
+    renderPanel();
+  });
+
+  function select(sel) {
+    state.sel = sel;
+    applyHighlight();
+    renderPanel();
+    if (window.matchMedia('(max-width: 1100px)').matches) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function setStep(n) {
+    state.step = state.step === n ? 0 : n;
+    state.slice = '';
+    state.sel = null;
+    applyHighlight();
+    renderPanel();
+  }
+  function setSlice(id) {
+    state.slice = state.slice === id ? '' : id;
+    state.step = 0;
+    state.sel = null;
+    applyHighlight();
+    renderPanel();
+  }
+
+  // ---------- 其他区域 ----------
+  function titleBlock() {
+    const failed = D.checks.filter((c) => !c.ok).length;
+    const rows = [
+      ['图号', model.drawingNo],
+      ['版本', model.version],
+      ['生成', D.generatedAt.replace('T', ' ').slice(0, 16) + ' UTC'],
+      ['一致性', failed ? `${failed} 项未通过` : `全部 ${D.checks.length} 项通过`],
+      ['代码对比', D.actual ? `已读取 ${D.actual.files} 个文件` : '尚未施工'],
+    ];
+    document.getElementById('titleblock').innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+  }
+  function toolbar() {
+    const steps = document.getElementById('steps');
+    steps.innerHTML = `<button type="button" data-step="0" aria-pressed="true">全部</button>` +
+      model.flow.map((s) => `<button type="button" data-step="${s.n}" aria-pressed="false" title="${esc(s.title)}">${CIRCLED[s.n]} ${esc(s.title.length > 8 ? s.title.slice(0, 8) + '…' : s.title)}</button>`).join('');
+    steps.addEventListener('click', (ev) => {
+      const b = ev.target.closest('button');
+      if (!b) return;
+      const n = Number(b.dataset.step);
+      if (n === 0) { state.step = 0; state.slice = ''; state.sel = null; applyHighlight(); renderPanel(); } else setStep(n);
+    });
+    const slices = document.getElementById('slices');
+    slices.innerHTML = model.slices.map((sl) => `<button type="button" data-slice="${esc(sl.id)}" aria-pressed="false" title="${esc(sl.name)}">切片 ${sliceNo(sl.id)} · ${esc(shortName(sl))}</button>`).join('');
+    slices.addEventListener('click', (ev) => {
+      const b = ev.target.closest('button');
+      if (b) setSlice(b.dataset.slice);
+    });
+    const rt = document.getElementById('rev-toggle');
+    if (rt && REV) {
+      rt.hidden = false;
+      rt.textContent = `标出本版改动（${REV.version}）`;
+      rt.addEventListener('click', () => {
+        const visible = state.rev && !state.step && !state.slice && !state.actual;
+        if (visible) state.rev = false;
+        else { state.rev = true; state.step = 0; state.slice = ''; state.actual = false; }
+        applyHighlight();
+        renderPanel();
+      });
+    }
+    const t = document.getElementById('actual-toggle');
+    if (D.actual) {
+      t.textContent = '对比实际代码';
+      t.addEventListener('click', () => { state.actual = !state.actual; applyHighlight(); });
+    } else {
+      t.textContent = '对比实际代码（施工后可用）';
+      t.disabled = true;
+    }
+  }
+  function checksList() {
+    document.getElementById('checks').innerHTML = D.checks.map((c) => `<li>
+      <span class="state ${c.ok ? 'ok' : 'bad'}">${c.ok ? '通过' : '未通过'}</span>
+      <div><div class="t">${esc(c.title)}</div><div class="e">${esc(c.explain)}</div>
+      ${c.problems.length ? `<ul>${c.problems.map((p) => `<li>${inline(p)}</li>`).join('')}</ul>` : ''}</div>
+    </li>`).join('');
+  }
+  function invTable() {
+    document.getElementById('inv-table').innerHTML = `<thead><tr><th>编号</th><th>绝不能发生</th><th>由谁证明</th></tr></thead><tbody>${model.invariants.map((x) =>
+      `<tr><td>${refBtn(x.id)}</td><td>${esc(x.text)} ${revChip(x.id)}</td><td>${x.verifiedBy.map(refBtn).join(' ')}</td></tr>`).join('')}</tbody>`;
+  }
+  function sliceList() {
+    document.getElementById('phases').innerHTML = model.slices.map((p) => `<li>
+      <div class="ph-head">${refBtn(p.id)}<span class="ph-name">${esc(p.name)} ${revChip(p.id)}</span><span class="ph-steps">${p.steps.length ? `亮起 ${circled(p.steps)}` : '不新增流程'}</span></div>
+      <div class="ph-demo"><code>${esc(p.demo)}</code></div>
+      <div class="ph-ats">${p.ats.map((a) => `<span>${refBtn(a)} ${esc(AT.get(a).name)} ${revChip(a)}</span>`).join('')}</div>
+    </li>`).join('');
+  }
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.report .ref[data-ref]');
+    if (!btn) return;
+    const id = btn.dataset.ref;
+    if (SL.has(id)) {
+      setSlice(id);
+      if (state.slice !== id) setSlice(id);
+      document.querySelector('.toolbar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    select(M.has(id) ? { type: 'module', id } : { type: 'doc', id });
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('foot').textContent = `由 design/tools/build.mjs 根据 design/architecture.json 和 design/SPEC.md 生成。改图或改文字后重新运行即可更新本页。`;
+
+  titleBlock();
+  toolbar();
+  drawDiagram();
+  legend();
+  checksList();
+  invTable();
+  sliceList();
+  applyHighlight();
+  renderPanel();
+})();
+</script>
+</body>
+</html>

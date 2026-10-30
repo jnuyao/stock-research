@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-10-30T09:19:49.386Z",
+  "checks": [
+    {
+      "id": "C0",
+      "title": "图本身没有断线",
+      "explain": "每根箭头两端的模块都存在，编号不重复；流程的时序图只引用存在的参与者。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C1",
+      "title": "图上每个模块都有文字说明",
+      "explain": "每个方框在 SPEC.md 里都有一个同编号的章节。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C2",
+      "title": "文字里没有图上不存在的东西",
+      "explain": "SPEC.md 中出现的每个编号都能在图上找到。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C3",
+      "title": "文字写的调用关系与箭头完全一致",
+      "explain": "每个模块章节的\"调用\"一行，与图上从它出发的箭头逐一对应。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C4",
+      "title": "验收场景的覆盖范围与图一致",
+      "explain": "模块章节的\"验收\"、验收章节的\"覆盖\"，都与 architecture.json 对得上。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C5",
+      "title": "每条不变量都有检查方法和验收",
+      "explain": "\"绝不能发生的事\"都写明了用什么测试来证明。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C6",
+      "title": "每个模块和每一步流程都有验收",
+      "explain": "图上没有\"写了但没人测\"的部分。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C7",
+      "title": "每个验收都排进了施工切片",
+      "explain": "施工顺序覆盖全部验收场景，每个验收只在一个切片里。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C8",
+      "title": "每个代码模块有独立目录",
+      "explain": "方框与代码目录一一对应，才能自动检查箭头。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C10",
+      "title": "CLAUDE.md 指向的文件都存在",
+      "explain": "Claude Code 每次开工先读 CLAUDE.md，它指向的图和规格必须真实存在。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C11",
+      "title": "每个切片都能跑通、能演示",
+      "explain": "切片亮起的流程都有验收证明，验收要跑的流程都已亮起，每个切片写明了演示命令。",
+      "ok": true,
+      "problems": []
+    }
+  ]
+}

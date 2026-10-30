@@ -1,0 +1,60 @@
+flowchart TB
+  subgraph entry["入口"]
+    SCHED["定时任务<br/><small>SCHED</small>"]
+  end
+  subgraph skill["Claude 技能"]
+    SKILL["Claude 技能<br/><small>SKILL</small>"]
+  end
+  subgraph cli["命令行"]
+    CLI["命令行 sd<br/><small>CLI</small>"]
+  end
+  subgraph data["数据网关"]
+    DATA["数据网关<br/><small>DATA</small>"]
+  end
+  subgraph guard["数据守门"]
+    QA["数据守门<br/><small>QA</small>"]
+  end
+  subgraph core["分析内核"]
+    EARN["财报包<br/><small>EARN</small>"]
+    ZONES["买点规则<br/><small>ZONES</small>"]
+    WATCH["观察清单<br/><small>WATCH</small>"]
+    REPORT["报告<br/><small>REPORT</small>"]
+    VAL["估值<br/><small>VAL</small>"]
+    TECH["技术位<br/><small>TECH</small>"]
+  end
+  subgraph store["本机文件"]
+    ST_SNAP["数据快照<br/><small>ST-SNAP</small>"]
+    ST_WATCH["观察清单文件<br/><small>ST-WATCH</small>"]
+    ST_REPORT["报告归档<br/><small>ST-REPORT</small>"]
+  end
+  subgraph resource["外部来源"]
+    R_OUT["Claude 项目<br/><small>R-OUT</small>"]
+    R_WEB["公开网页<br/><small>R-WEB</small>"]
+    R_MKT["行情与预期接口<br/><small>R-MKT</small>"]
+    R_SEC["SEC EDGAR<br/><small>R-SEC</small>"]
+    R_HKEX["港交所披露易<br/><small>R-HKEX</small>"]
+    R_MACRO["宏观数据<br/><small>R-MACRO</small>"]
+  end
+  SCHED -.->|"按时间启动一个 Claude 会话，跑 weekly-check 或 earnings-review"| SKILL
+  SKILL -.->|"运行 sd 命令，读取 JSON 输出"| CLI
+  SKILL ==>|"云端：用 WebFetch 抓行情、预期、财报公告、电话会实录或 IR 演示材料"| R_WEB
+  SKILL ==>|"发布报告页；有提醒时在项目里发消息"| R_OUT
+  CLI -->|"fetch 抓取 / import 导入网页数据"| DATA
+  CLI -->|"pack：组装财报包"| EARN
+  CLI -->|"zones：按输入假设算三档"| ZONES
+  CLI -->|"watch 保存买点 / check 周五复盘"| WATCH
+  CLI -->|"report：分析包 + Claude 的解读 → HTML"| REPORT
+  DATA ==>|"Mac：美股和港股价格、历史、一致预期"| R_MKT
+  DATA ==>|"Mac：8-K 附件、XBRL 三表"| R_SEC
+  DATA ==>|"Mac：10 年期利率、VIX、信用利差、美元兑港元"| R_MACRO
+  DATA -.->|"写入带来源和时间的快照"| ST_SNAP
+  EARN -->|"取财报、预期、指引字段"| QA
+  ZONES -->|"合理 PE 区间对应的价格"| VAL
+  ZONES -->|"均线、多次测试的支撑、52 周高点回撤"| TECH
+  VAL -->|"取 EPS 预期、历史 PE"| QA
+  TECH -->|"取日线和周线收盘"| QA
+  WATCH -->|"取最新周收盘和宏观信号"| QA
+  WATCH -.->|"读写三档价、失效位、上次状态"| ST_WATCH
+  QA -.->|"读快照，判断能不能用"| ST_SNAP
+  REPORT -.->|"写 HTML 和分析包"| ST_REPORT
+  DATA ==>|"Mac：港股业绩公告和定期报告"| R_HKEX
