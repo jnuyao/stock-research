@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-30T09:19:49.386Z",
+  "generatedAt": "2026-10-30T09:34:23.786Z",
   "checks": [
     {
       "id": "C0",
@@ -61,6 +61,13 @@
       "id": "C8",
       "title": "每个代码模块有独立目录",
       "explain": "方框与代码目录一一对应，才能自动检查箭头。",
+      "ok": true,
+      "problems": []
+    },
+    {
+      "id": "C9",
+      "title": "实际代码的调用关系与图一致",
+      "explain": "由 make arch 读取真实 import 后对比。",
       "ok": true,
       "problems": []
     },

@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stockdesk"
+version = "0.1.0"
+description = "股票研究台：取数、财报包、三档买点、报告、观察清单（不构成投资建议）"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-socket", "ruff"]
+
+[project.scripts]
+sd = "stockdesk.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+testpaths = ["tests"]
+addopts = "-q --disable-socket -m 'not live'"
+markers = ["live: 需要联网的实时测试，只在 Mac 上手动跑"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/stockdesk/report/style.py" = ["E501"]  # CSS 原样照搬现有财报页
+"design/tools/*" = ["E501"]  # 来自 blueprint-kit，不改
+
+[tool.ruff.lint.isort]
+known-local-folder = ["conftest"]

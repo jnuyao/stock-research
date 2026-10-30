@@ -13,3 +13,6 @@ data/network-profile.json
 # 系统文件
 .DS_Store
 .env
+
+# 生成的报告（演示和本机运行）
+reports/
