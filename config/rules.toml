@@ -1,0 +1,34 @@
+# 买点规则（[ZONES] 读取）。改这里的任何参数都算改规则，报告里会写出规则版本。
+# 每一档从候选锚点里取“低于上限的最近一个”；锚点只能是 [TECH] 或 [VAL] 输出里的具体数值。
+version = "2026-10-30.1"
+
+band = 0.03               # 每档价格区间 = 锚点上下 3%
+first_gap = 0.03          # A 档锚点至少比参考价低 3%
+max_depth = 0.50          # 锚点离参考价最多 50%，再远就不用（留作储备）
+invalidation_gap = 0.05   # 失效位 = 最低一档下沿再低 5%，按周收盘判断
+recent_earnings_days = 10 # 财报后 10 个交易日内，右侧信号用财报前收盘价
+near_high = 0.19          # 离 52 周高点不到 19% 时改用 near_high_sizes，并留一半作恐慌储备
+
+[tiers.A]
+size = 0.30
+anchors = ["support", "ma50", "fair_high", "fair_mid", "fair_low"]
+check = "median"          # 估值校验：隐含市盈率不高于近 3 年中位
+condition = "到价分两次买"
+condition_after_earnings = "财报跳空后等 2 个交易日，守住跳空当日低点再分两次买"
+
+[tiers.B]
+size = 0.30
+anchors = ["ma200", "fair_low", "support"]
+check = "p25"             # 接近近 3 年市盈率低分位
+condition = "宏观没有降风险信号时挂单"
+
+[tiers.C]
+size = 0.40
+anchors = ["drawdown_0.35", "drawdown_0.40", "drawdown_0.45", "pe_floor", "support"]
+check = "min"             # 危机估值：不高于近 3 年最低市盈率
+condition = "只在 VIX > 35 或标普 500 自高点回撤 15% 时用"
+
+[near_high_sizes]
+A = 0.20
+B = 0.30
+C = 0.50

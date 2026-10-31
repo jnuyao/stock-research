@@ -1,0 +1,38 @@
+[
+ {
+  "ticker": "0992.HK",
+  "field": "cons_revenue",
+  "period": "FY2027Q1",
+  "value": null,
+  "unit": "USD",
+  "source_url": "",
+  "as_of": "",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "gap_ack": "港股免费一致预期覆盖少，这次没取到；作为非关键字段登记缺失"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "cons_eps_gaap",
+  "period": "FY2027Q1",
+  "value": null,
+  "unit": "USD/share",
+  "source_url": "",
+  "as_of": "",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "gap_ack": "港股免费一致预期覆盖少，这次没取到；作为非关键字段登记缺失"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "peer_pe",
+  "period": "2026-10-28",
+  "value": null,
+  "unit": "x",
+  "source_url": "",
+  "as_of": "",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "gap_ack": "同行市盈率这次没取，先登记缺失"
+ }
+]

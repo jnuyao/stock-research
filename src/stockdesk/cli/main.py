@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import tomllib
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -17,19 +18,23 @@ from typing import Any
 
 from stockdesk.earnings import build_pack
 from stockdesk.report import parse_notes, render_report, self_review, summary_line
-from stockdesk.shared.calendar import last_trading_day
+from stockdesk.shared.calendar import last_trading_day, market_of
 from stockdesk.shared.errors import ErrorCode, StockdeskError
 from stockdesk.shared.fmt import show
-from stockdesk.shared.models import EarningsPack
+from stockdesk.shared.models import CompanyProfile, EarningsPack
+from stockdesk.zones import compute_zones
+
+from .zones_view import print_zones
 
 CASES_DIR = Path("tests/cases")
 DATA_DIR = Path("data")
 REPORTS_DIR = Path("reports")
+CONFIG_DIR = Path("config")
 
 # 后面切片才实现的命令：先占位，调用时明确告诉用户还没做
 LATER = {
     "doctor": "SL-3", "fetch": "SL-3", "import": "SL-3", "preview": "SL-4",
-    "zones": "SL-2", "watch": "SL-4", "check": "SL-4",
+    "watch": "SL-4", "check": "SL-4",
 }
 
 
@@ -41,6 +46,7 @@ class Source:
     as_of: str
     market: str
     case: dict[str, Any]
+    profile: CompanyProfile
 
 
 def _resolve(replay: str | None, as_of: str | None, ticker: str) -> Source:
@@ -54,15 +60,58 @@ def _resolve(replay: str | None, as_of: str | None, ticker: str) -> Source:
                 {"known_cases": known},
             )
         case = json.loads(case_file.read_text(encoding="utf-8"))
-        return Source(root, as_of or case["as_of"], case.get("market", "US"), case)
-    market = "HK" if ticker.upper().endswith(".HK") else "US"
-    day = as_of or last_trading_day(date.today(), market).isoformat()
-    return Source(DATA_DIR, day, market, {})
+        ticker = ticker or case["ticker"]
+        profile = load_profile(ticker)
+        return Source(root, as_of or case["as_of"], case.get("market", profile.market), case, profile)
+    profile = load_profile(ticker)
+    day = as_of or last_trading_day(date.today(), profile.market).isoformat()
+    return Source(DATA_DIR, day, profile.market, {}, profile)
+
+
+def _config(name: str) -> dict[str, Any]:
+    path = CONFIG_DIR / name
+    if not path.exists():
+        raise StockdeskError(ErrorCode.BAD_INPUT, f"找不到配置文件 {path}（要在项目根目录运行 sd）")
+    return tomllib.loads(path.read_text(encoding="utf-8"))
+
+
+def load_profile(ticker: str) -> CompanyProfile:
+    companies = _config("companies.toml")
+    profile = CompanyProfile.from_dict(ticker, companies.get(ticker.upper(), {}))
+    if profile.market != market_of(ticker):
+        raise StockdeskError(
+            ErrorCode.BAD_INPUT,
+            f"{ticker} 的市场写成了 {profile.market}，代码看起来是 {market_of(ticker)}；请改 config/companies.toml",
+        )
+    return profile
 
 
 def _pack(args: argparse.Namespace) -> EarningsPack:
     src = _resolve(args.replay, args.as_of, args.ticker)
-    return build_pack(args.ticker, args.quarter, src.as_of, root=src.root, market=src.market)
+    return build_pack(args.ticker, args.quarter, src.as_of, root=src.root, market=src.market, profile=src.profile)
+
+
+def _pe_range(text: str) -> tuple[float, float]:
+    try:
+        lo, hi = (float(x) for x in text.replace("–", "-").split("-"))
+    except ValueError as err:
+        raise StockdeskError(ErrorCode.BAD_INPUT, f"--pe 要写成 低-高，例如 38-45，收到 {text}") from err
+    return lo, hi
+
+
+def cmd_zones(args: argparse.Namespace) -> dict[str, Any]:
+    src = _resolve(args.replay, args.as_of, args.ticker)
+    earnings = src.case.get("earnings", {})
+    if args.earnings_date:
+        earnings = {"date": args.earnings_date, "timing": args.earnings_timing}
+    plan = compute_zones(
+        args.ticker, src.as_of, args.eps, _pe_range(args.pe), _config("rules.toml"), src.root,
+        market=src.market, price_currency=src.profile.price_currency,
+        report_currency=src.profile.report_currency, eps_currency=args.eps_currency, earnings=earnings,
+    )
+    if not args.json:
+        print_zones(plan)
+    return plan
 
 
 def _print_pack(pack: EarningsPack) -> None:
@@ -96,7 +145,8 @@ def cmd_demo(args: argparse.Namespace) -> dict[str, Any]:
     """用固定案例跑完 pack → 自查 → report，并演示几种会被拒绝的解读。"""
     src = _resolve(args.case, None, "")
     case = src.case
-    pack = build_pack(case["ticker"], case["quarter"], src.as_of, root=src.root, market=src.market)
+    pack = build_pack(case["ticker"], case["quarter"], src.as_of, root=src.root, market=src.market,
+                      profile=src.profile)
     notes_file = src.root / case.get("notes", "notes/ok.md")
     path = render_report(pack, notes_file.read_text(encoding="utf-8"), Path(args.out))
 
@@ -147,6 +197,18 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", default=str(REPORTS_DIR), help="报告归档目录，默认 reports/")
     common(sp)
     sp.set_defaults(func=cmd_report)
+
+    sp = sub.add_parser("zones", help="算三档买点、右侧信号和失效位")
+    sp.add_argument("ticker")
+    sp.add_argument("--eps", type=float, required=True, help="前瞻 EPS（默认按股价货币）")
+    sp.add_argument("--eps-currency", dest="eps_currency", help="EPS 的货币，例如联想写 USD 会按当日汇率换成港元")
+    sp.add_argument("--pe", required=True, metavar="低-高", help="合理市盈率区间，例如 38-45")
+    sp.add_argument("--earnings-date", dest="earnings_date", metavar="YYYY-MM-DD",
+                    help="最近一次财报日（回放时取案例里的）")
+    sp.add_argument("--earnings-timing", dest="earnings_timing", default="after_close",
+                    choices=["after_close", "before_open"])
+    common(sp)
+    sp.set_defaults(func=cmd_zones)
 
     sp = sub.add_parser("demo", help="用固定案例跑完 pack → report")
     sp.add_argument("case")

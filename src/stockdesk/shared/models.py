@@ -7,7 +7,7 @@ import json
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-# 单位：USD 金额（原值，不缩写）、ratio 比例（小数）、USD/share 每股、pt 百分点差（小数）、text 文字
+# 单位：USD/HKD 金额（原值，不缩写）、ratio 比例（小数）、USD/share 每股、pt 百分点差（小数）、x 倍数、text 文字
 MONEY_UNITS = {"USD", "HKD"}
 PER_SHARE_UNITS = {"USD/share", "HKD/share"}
 RATIO_UNITS = {"ratio", "pt"}
@@ -36,6 +36,66 @@ class Fact:
 
 
 @dataclass(frozen=True)
+class Series:
+    """一段时间序列（例如日线）。和 Fact 一样带来源和日期，rows 按 columns 排列、按日期升序。"""
+
+    ticker: str
+    field: str
+    unit: str
+    columns: list[str]
+    rows: list[list]
+    source_url: str
+    as_of: str
+    fetched_at: str
+    via: str = "fetch"
+    note: str | None = None
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Series:
+        known = {k: d.get(k) for k in cls.__dataclass_fields__}
+        known["rows"] = sorted(known["rows"] or [], key=lambda r: r[0])
+        return cls(**known)
+
+    def column(self, name: str) -> list:
+        i = self.columns.index(name)
+        return [r[i] for r in self.rows]
+
+    def until(self, day: str) -> Series:
+        """只保留 day 及以前的行（回放时不偷看未来）。"""
+        return Series(**{**self.__dict__, "rows": [r for r in self.rows if r[0] <= day]})
+
+
+@dataclass(frozen=True)
+class CompanyProfile:
+    """公司档案（config/companies.toml）：决定财报包要哪些字段、用什么货币。"""
+
+    ticker: str
+    name: str = ""
+    market: str = "US"
+    price_currency: str = "USD"
+    report_currency: str = "USD"
+    eps_basis: str = "nongaap"      # 一致预期对照哪种 EPS：nongaap 或 gaap
+    guidance: bool = True           # 公司是否给季度数字指引
+    gross_margin: bool = True       # 新闻稿是否报毛利率
+    consensus_critical: bool = True  # 一致预期是否关键字段（港股免费来源覆盖少，设为 False）
+    segments: dict[str, str] = field(default_factory=dict)
+    kpis: dict[str, str] = field(default_factory=dict)
+
+    @classmethod
+    def default(cls, ticker: str) -> CompanyProfile:
+        if ticker.upper().endswith(".HK"):
+            return cls(ticker.upper(), market="HK", price_currency="HKD", report_currency="HKD",
+                       eps_basis="gaap", guidance=False, consensus_critical=False)
+        return cls(ticker.upper())
+
+    @classmethod
+    def from_dict(cls, ticker: str, d: dict[str, Any]) -> CompanyProfile:
+        base = cls.default(ticker)
+        known = {k: v for k, v in d.items() if k in cls.__dataclass_fields__}
+        return cls(**{**base.__dict__, **known, "ticker": ticker.upper()})
+
+
+@dataclass(frozen=True)
 class Source:
     url: str
     as_of: str
@@ -54,6 +114,7 @@ class PackItem:
     derived_from: list[str] = field(default_factory=list)
     missing: bool = False
     gap_ack: str | None = None
+    note: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

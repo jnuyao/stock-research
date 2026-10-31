@@ -1,0 +1,26 @@
+[
+ {
+  "ticker": "GOOGL",
+  "field": "cons_revenue",
+  "period": "2026Q3",
+  "value": 128200000000.0,
+  "unit": "USD",
+  "source_url": "https://www.thestreet.com/latest-news/alphabet-inc-q3-2026-earnings-call-stock-forecast",
+  "as_of": "2026-10-28",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "TheStreet 引 Reuters 一致预期"
+ },
+ {
+  "ticker": "GOOGL",
+  "field": "cons_eps_gaap",
+  "period": "2026Q3",
+  "value": 3.02,
+  "unit": "USD/share",
+  "source_url": "https://www.thestreet.com/latest-news/alphabet-inc-q3-2026-earnings-call-stock-forecast",
+  "as_of": "2026-10-28",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "TheStreet 标为 adj；Alphabet 只报 GAAP EPS，所以和 GAAP EPS 比"
+ }
+]

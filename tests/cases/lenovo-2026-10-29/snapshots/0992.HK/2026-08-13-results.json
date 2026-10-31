@@ -1,0 +1,150 @@
+[
+ {
+  "ticker": "0992.HK",
+  "field": "revenue",
+  "period": "FY2027Q1",
+  "value": 26942766000.0,
+  "unit": "USD",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "revenue_yoy",
+  "period": "FY2027Q1",
+  "value": 0.4309,
+  "unit": "ratio",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "公告两期营收计算：26,942,766 / 18,829,869 − 1（千美元）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "gross_margin_gaap",
+  "period": "FY2027Q1",
+  "value": 0.1652,
+  "unit": "ratio",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "公告毛利 4,452 / 营收 26,943（百万美元）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "eps_gaap",
+  "period": "FY2027Q1",
+  "value": -0.0504,
+  "unit": "USD/share",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "基本每股亏损 5.04 美仙（认股权证公允价值变动等非现金项目所致）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "op_income",
+  "period": "FY2027Q1",
+  "value": 19000000.0,
+  "unit": "USD",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "adj_net_income",
+  "period": "FY2027Q1",
+  "value": 1074717000.0,
+  "unit": "USD",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "经调整权益持有人应占溢利（非香港财务报告准则）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "adj_net_income_yoy",
+  "period": "FY2027Q1",
+  "value": 1.7599,
+  "unit": "ratio",
+  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300141.pdf",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import",
+  "note": "公告两期计算：1,074,717 / 389,403 − 1（千美元）"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "segment.IDG.revenue",
+  "period": "FY2027Q1",
+  "value": 17100000000.0,
+  "unit": "USD",
+  "source_url": "https://news.lenovo.com/pressroom/press-releases/q1-fy-2026-27/",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "segment.IDG.revenue_yoy",
+  "period": "FY2027Q1",
+  "value": 0.27,
+  "unit": "ratio",
+  "source_url": "https://news.lenovo.com/pressroom/press-releases/q1-fy-2026-27/",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "segment.ISG.revenue",
+  "period": "FY2027Q1",
+  "value": 8500000000.0,
+  "unit": "USD",
+  "source_url": "https://news.lenovo.com/pressroom/press-releases/q1-fy-2026-27/",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "segment.ISG.revenue_yoy",
+  "period": "FY2027Q1",
+  "value": 0.98,
+  "unit": "ratio",
+  "source_url": "https://news.lenovo.com/pressroom/press-releases/q1-fy-2026-27/",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "segment.SSG.revenue",
+  "period": "FY2027Q1",
+  "value": 2900000000.0,
+  "unit": "USD",
+  "source_url": "https://news.lenovo.com/pressroom/press-releases/q1-fy-2026-27/",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ },
+ {
+  "ticker": "0992.HK",
+  "field": "segment.SSG.revenue_yoy",
+  "period": "FY2027Q1",
+  "value": 0.28,
+  "unit": "ratio",
+  "source_url": "https://news.lenovo.com/pressroom/press-releases/q1-fy-2026-27/",
+  "as_of": "2026-06-30",
+  "fetched_at": "2026-10-30T10:30:00Z",
+  "via": "import"
+ }
+]
