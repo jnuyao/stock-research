@@ -1,0 +1,59 @@
+# 数据来源登记：每个来源能给哪些数据、适用哪个市场、优先级（小的先用）。
+# 哪些来源这台机器连得上，由 `sd doctor` 实测后写进 data/network-profile.json；`sd fetch` 按它选来源。
+# 同一类数据有两个来源都能连时都会抓，交给 [QA] 交叉核对（价格差 1% 以上算打架）。
+#
+# 数据种类：price 日线和收盘价，fx 汇率，fundamentals 财报数字，consensus 一致预期，filing 公告链接，macro 宏观
+
+[yahoo]
+name = "Yahoo Finance（yfinance）"
+probe = "https://query1.finance.yahoo.com/"
+kinds = ["price", "fx", "consensus", "macro"]
+markets = ["US", "HK"]
+priority = 1
+needs = ["yfinance"]
+where = "只在 Mac 上用；云端连不上"
+
+[stockanalysis]
+name = "stockanalysis.com 历史价格页"
+probe = "https://stockanalysis.com/"
+kinds = ["price"]
+markets = ["US", "HK"]
+priority = 2
+needs = []
+where = "第二来源，只取最近几天的收盘价核对"
+
+[akshare]
+name = "AKShare（新浪港股日线）"
+probe = "https://finance.sina.com.cn/"
+kinds = ["price"]
+markets = ["HK"]
+priority = 3
+needs = ["akshare"]
+where = "港股第三来源，可选安装"
+
+[sec]
+name = "SEC EDGAR"
+probe = "https://www.sec.gov/files/company_tickers.json"
+kinds = ["fundamentals", "filing"]
+markets = ["US"]
+priority = 1
+needs = []
+where = "请求头要带联系邮箱：环境变量 STOCKDESK_SEC_CONTACT"
+
+[hkex]
+name = "港交所披露易"
+probe = "https://www1.hkexnews.hk/"
+kinds = ["filing"]
+markets = ["HK"]
+priority = 1
+needs = []
+where = "只找最近一份业绩公告的链接，数字由 Claude 读公告后导入"
+
+[fred]
+name = "FRED（圣路易斯联储）"
+probe = "https://fred.stlouisfed.org/"
+kinds = ["macro"]
+markets = ["US", "HK"]
+priority = 1
+needs = []
+where = "10 年期美债、VIX、高收益债利差"

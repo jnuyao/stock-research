@@ -7,10 +7,12 @@ name = "stockdesk"
 version = "0.1.0"
 description = "股票研究台：取数、财报包、三档买点、报告、观察清单（不构成投资建议）"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["httpx"]
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-socket", "ruff"]
+mac = ["yfinance", "pandas"]   # 只在 Mac 上的 sd fetch 里用
+hk = ["akshare"]               # 可选：港股第三个价格来源
 
 [project.scripts]
 sd = "stockdesk.cli.main:main"

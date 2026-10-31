@@ -37,7 +37,11 @@ class Fact:
 
 @dataclass(frozen=True)
 class Series:
-    """一段时间序列（例如日线）。和 Fact 一样带来源和日期，rows 按 columns 排列、按日期升序。"""
+    """一段时间序列（例如日线）。和 Fact 一样带来源和日期，rows 按 columns 排列、按日期升序。
+
+    多份快照拼成的序列（例如 Mac 抓的一年日线 + 云端导入的最近几天）每一行的来源不同：
+    row_sources 和 rows 一一对应；为 None 时整段都来自 source_url。
+    """
 
     ticker: str
     field: str
@@ -49,12 +53,51 @@ class Series:
     fetched_at: str
     via: str = "fetch"
     note: str | None = None
+    row_sources: list[str] | None = None
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Series:
-        known = {k: d.get(k) for k in cls.__dataclass_fields__}
+        known = {k: d.get(k) for k in cls.__dataclass_fields__ if k != "row_sources"}
         known["rows"] = sorted(known["rows"] or [], key=lambda r: r[0])
         return cls(**known)
+
+    def to_dict(self) -> dict[str, Any]:
+        d = {k: v for k, v in asdict(self).items() if k != "row_sources"}
+        return d
+
+    @classmethod
+    def merge(cls, parts: list[Series]) -> Series:
+        """按日期拼接同一字段的多份序列；同一天两份都有时，用较新的那份（as_of、fetched_at 更晚）。"""
+        if len(parts) == 1:
+            return parts[0]
+        parts = sorted(parts, key=lambda s: (s.as_of, s.fetched_at))
+        newest = parts[-1]
+        if any(s.columns != newest.columns or s.unit != newest.unit for s in parts):
+            raise ValueError(f"{newest.field} 的几份快照列名或单位不一致，不能拼接")
+        by_day: dict[str, tuple[list, str]] = {}
+        for s in parts:
+            for i, r in enumerate(s.rows):
+                by_day[r[0]] = (r, s.source_at(i))
+        days = sorted(by_day)
+        return cls(
+            newest.ticker, newest.field, newest.unit, newest.columns, [by_day[d][0] for d in days],
+            newest.source_url, newest.as_of, newest.fetched_at, newest.via, newest.note,
+            [by_day[d][1] for d in days],
+        )
+
+    def source_at(self, i: int) -> str:
+        return self.row_sources[i] if self.row_sources else self.source_url
+
+    def source_ranges(self) -> list[dict[str, str]]:
+        """连续来自同一来源的日期段：[{url, from, to}, ...]。"""
+        out: list[dict[str, str]] = []
+        for i, r in enumerate(self.rows):
+            url = self.source_at(i)
+            if out and out[-1]["url"] == url:
+                out[-1]["to"] = r[0]
+            else:
+                out.append({"url": url, "from": r[0], "to": r[0]})
+        return out
 
     def column(self, name: str) -> list:
         i = self.columns.index(name)
@@ -62,7 +105,9 @@ class Series:
 
     def until(self, day: str) -> Series:
         """只保留 day 及以前的行（回放时不偷看未来）。"""
-        return Series(**{**self.__dict__, "rows": [r for r in self.rows if r[0] <= day]})
+        keep = [i for i, r in enumerate(self.rows) if r[0] <= day]
+        sources = [self.row_sources[i] for i in keep] if self.row_sources else None
+        return Series(**{**self.__dict__, "rows": [self.rows[i] for i in keep], "row_sources": sources})
 
 
 @dataclass(frozen=True)
@@ -78,6 +123,7 @@ class CompanyProfile:
     guidance: bool = True           # 公司是否给季度数字指引
     gross_margin: bool = True       # 新闻稿是否报毛利率
     consensus_critical: bool = True  # 一致预期是否关键字段（港股免费来源覆盖少，设为 False）
+    fiscal_year_end: int = 12       # 财年最后一个月：英特尔 12，联想 3（季度写成 FY2027Q1）
     segments: dict[str, str] = field(default_factory=dict)
     kpis: dict[str, str] = field(default_factory=dict)
 

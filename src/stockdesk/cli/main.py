@@ -16,6 +16,15 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from stockdesk.data import (
+    ack_gaps,
+    data_root,
+    doctor,
+    fetch,
+    import_json,
+    load_network_profile,
+    load_sources,
+)
 from stockdesk.earnings import build_pack
 from stockdesk.report import parse_notes, render_report, self_review, summary_line
 from stockdesk.shared.calendar import last_trading_day, market_of
@@ -24,18 +33,15 @@ from stockdesk.shared.fmt import show
 from stockdesk.shared.models import CompanyProfile, EarningsPack
 from stockdesk.zones import compute_zones
 
+from .data_view import print_doctor, print_fetch, print_import
 from .zones_view import print_zones
 
 CASES_DIR = Path("tests/cases")
-DATA_DIR = Path("data")
 REPORTS_DIR = Path("reports")
 CONFIG_DIR = Path("config")
 
 # 后面切片才实现的命令：先占位，调用时明确告诉用户还没做
-LATER = {
-    "doctor": "SL-3", "fetch": "SL-3", "import": "SL-3", "preview": "SL-4",
-    "watch": "SL-4", "check": "SL-4",
-}
+LATER = {"preview": "SL-4", "watch": "SL-4", "check": "SL-4"}
 
 
 @dataclass
@@ -65,7 +71,7 @@ def _resolve(replay: str | None, as_of: str | None, ticker: str) -> Source:
         return Source(root, as_of or case["as_of"], case.get("market", profile.market), case, profile)
     profile = load_profile(ticker)
     day = as_of or last_trading_day(date.today(), profile.market).isoformat()
-    return Source(DATA_DIR, day, profile.market, {}, profile)
+    return Source(data_root(), day, profile.market, {}, profile)
 
 
 def _config(name: str) -> dict[str, Any]:
@@ -168,6 +174,42 @@ def cmd_demo(args: argparse.Namespace) -> dict[str, Any]:
     return {"report": str(path), "pack_hash": pack.pack_hash, "items": len(pack.items), "refused": refused}
 
 
+def cmd_doctor(args: argparse.Namespace) -> dict[str, Any]:
+    prof = doctor(load_sources(CONFIG_DIR / "sources.toml"), data_root())
+    if not args.json:
+        print_doctor(prof)
+    return prof
+
+
+def cmd_fetch(args: argparse.Namespace) -> dict[str, Any]:
+    profile = load_profile(args.ticker)
+    sources = load_sources(CONFIG_DIR / "sources.toml")
+    root = data_root()
+    network = load_network_profile(root) or doctor(sources, root)
+    kinds = args.kinds.split(",") if args.kinds else None
+    result = fetch(args.ticker, profile, sources, network, root, kinds=kinds)
+    if not args.json:
+        print_fetch(result)
+    return result
+
+
+def cmd_import(args: argparse.Namespace) -> dict[str, Any]:
+    if not args.file and not args.gap_ack:
+        raise StockdeskError(ErrorCode.BAD_INPUT, "要给一个 JSON 文件，或用 --gap-ack 字段=原因 登记缺失")
+    load_profile(args.ticker)  # 代码写错时早点报错
+    root = data_root()
+    results = []
+    if args.file:
+        results.append(import_json(args.ticker, Path(args.file), root))
+    if args.gap_ack:
+        results.append(ack_gaps(args.ticker, args.gap_ack, root, as_of=args.as_of))
+    result = results[0] if len(results) == 1 else {**results[0], "also": results[1:]}
+    if not args.json:
+        for r in results:
+            print_import(r)
+    return result
+
+
 def cmd_later(args: argparse.Namespace) -> dict[str, Any]:
     raise StockdeskError(
         ErrorCode.NOT_YET_BUILT, f"sd {args.command} 属于切片 {LATER[args.command]}，还没实现",
@@ -209,6 +251,26 @@ def build_parser() -> argparse.ArgumentParser:
                     choices=["after_close", "before_open"])
     common(sp)
     sp.set_defaults(func=cmd_zones)
+
+    sp = sub.add_parser("doctor", help="网络预检：现在是云端还是 Mac，各来源连不连得上")
+    sp.add_argument("--json", action="store_true", help="只输出 JSON")
+    sp.set_defaults(func=cmd_doctor)
+
+    sp = sub.add_parser("fetch", help="Mac 上直连来源取数，写成快照")
+    sp.add_argument("ticker")
+    sp.add_argument("--kinds", metavar="price,fundamentals,...",
+                    help="只取这几类：price、fx、fundamentals、consensus、filing、macro")
+    sp.add_argument("--json", action="store_true", help="只输出 JSON")
+    sp.set_defaults(func=cmd_fetch)
+
+    sp = sub.add_parser("import", help="导入 Claude 抓好的网页数据（JSON），或登记确认缺失的字段")
+    sp.add_argument("ticker")
+    sp.add_argument("file", nargs="?", help="快照格式的 JSON：事实列表或一段序列")
+    sp.add_argument("--gap-ack", dest="gap_ack", action="append", metavar="字段[@期间]=原因",
+                    help="登记补不到的非关键字段，可写多次，例如 --gap-ack peer_pe=同行 PE 这次没取到")
+    sp.add_argument("--as-of", dest="as_of", metavar="YYYY-MM-DD", help="--gap-ack 登记的数据日期，默认今天")
+    sp.add_argument("--json", action="store_true", help="只输出 JSON")
+    sp.set_defaults(func=cmd_import)
 
     sp = sub.add_parser("demo", help="用固定案例跑完 pack → report")
     sp.add_argument("case")

@@ -7,7 +7,8 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 from .errors import ErrorCode, StockdeskError
 
@@ -43,6 +44,10 @@ KNOWN = {
     "US": (date(2024, 1, 1), date(2027, 12, 31), NYSE_HOLIDAYS),
     "HK": (date(2024, 1, 1), date(2027, 8, 31), HKEX_HOLIDAYS),
 }
+
+# 收盘时间（当地时间）：美东 16:00；香港 16:10（收市竞价结束）
+MARKET_TZ = {"US": ZoneInfo("America/New_York"), "HK": ZoneInfo("Asia/Hong_Kong")}
+MARKET_CLOSE = {"US": time(16, 0), "HK": time(16, 10)}
 
 
 def market_of(ticker: str) -> str:
@@ -88,3 +93,36 @@ def is_week_close(day: date, market: str = "US") -> bool:
     while nxt.weekday() < 5 and not is_trading_day(nxt, market):
         nxt += timedelta(days=1)
     return nxt.weekday() >= 5
+
+
+def market_today(now: datetime, market: str = "US") -> date:
+    """now（带时区）在该市场当地是哪一天。"""
+    return now.astimezone(MARKET_TZ[market]).date()
+
+
+def session_closed(day: date, now: datetime, market: str = "US") -> bool:
+    """day 这一天的交易是否已经收盘（盘中抓到的当天日线还不是收盘价）。"""
+    local = now.astimezone(MARKET_TZ[market])
+    if day < local.date():
+        return True
+    return day == local.date() and local.time() >= MARKET_CLOSE[market]
+
+
+def last_closed_session(now: datetime, market: str = "US") -> date:
+    """到 now 为止最近一个已经收盘的交易日。"""
+    day = last_trading_day(market_today(now, market), market)
+    return day if session_closed(day, now, market) else previous_trading_day(day, market)
+
+
+def fiscal_quarter(period_end: date, fiscal_year_end: int = 12) -> str:
+    """季度末日期 → 季度名。财年和日历年一致时写 2026Q3，否则写 FY2027Q1（财年按结束那年命名）。
+
+    季度末常落在月底前后几天（英特尔 2026-09-27），先往前挪 7 天再看月份。
+    """
+    d = period_end - timedelta(days=7)
+    start = fiscal_year_end % 12 + 1
+    quarter = (d.month - start) % 12 // 3 + 1
+    if fiscal_year_end == 12:
+        return f"{d.year}Q{quarter}"
+    year = d.year if d.month <= fiscal_year_end else d.year + 1
+    return f"FY{year}Q{quarter}"

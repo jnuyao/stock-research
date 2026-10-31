@@ -62,3 +62,25 @@ def test_no_order_placement_code():
     pattern = re.compile(r"place_order|submit_order|create_order|broker", re.I)
     for path in (ROOT / "src").rglob("*.py"):
         assert not pattern.search(path.read_text(encoding="utf-8")), path
+
+
+NETWORK_LIBS = {"httpx", "requests", "urllib3", "aiohttp", "socket", "http.client", "urllib.request", "yfinance",
+                "akshare", "edgar"}
+
+
+def test_only_data_gateway_imports_network_libraries():
+    """INV-8：联网只在 src/stockdesk/data/ 里。"""
+    import ast
+
+    offenders = []
+    for path in (ROOT / "src" / "stockdesk").rglob("*.py"):
+        rel = path.relative_to(ROOT).as_posix()
+        if rel.startswith("src/stockdesk/data/"):
+            continue
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            names = [a.name for a in node.names] if isinstance(node, ast.Import) else (
+                [node.module or ""] if isinstance(node, ast.ImportFrom) else [])
+            for name in names:
+                if any(name == lib or name.startswith(lib + ".") for lib in NETWORK_LIBS):
+                    offenders.append(f"{rel} 引用了 {name}")
+    assert not offenders, offenders

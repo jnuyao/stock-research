@@ -109,20 +109,25 @@ def load_snapshots(root: Path, ticker: str) -> tuple[list[Fact], dict[str, Serie
             {"ticker": ticker, "folder": str(folder)},
         )
     facts: list[Fact] = []
-    series: dict[str, Series] = {}
+    parts: dict[str, list[Series]] = {}
     for path in files:
         raw = json.loads(path.read_text(encoding="utf-8"))
         if isinstance(raw, dict):  # 一段序列
             s = Series.from_dict(raw)
             _check_source(s.field, s.source_url, s.as_of, s.fetched_at, path)
-            if s.field not in series or s.as_of > series[s.field].as_of:
-                series[s.field] = s
+            parts.setdefault(s.field, []).append(s)
             continue
         for item in raw:
             fact = Fact.from_dict(item)
             if not (fact.value is None and fact.gap_ack):
                 _check_source(fact.field, fact.source_url, fact.as_of, fact.fetched_at, path)
             facts.append(fact)
+    series: dict[str, Series] = {}
+    for name, group in parts.items():  # 多份同名序列按日期拼接，每一行保留自己的来源
+        try:
+            series[name] = Series.merge(group)
+        except ValueError as err:
+            raise StockdeskError(ErrorCode.BAD_INPUT, f"{ticker}：{err}", {"field": name}) from err
     return facts, series
 
 
@@ -142,7 +147,7 @@ def _check_source(name: str, url: str, as_of: str, fetched_at: str, path: Path) 
 def _differs(a: Fact, b: Fact) -> bool:
     if a.value is None or b.value is None:
         return False
-    if a.field.startswith("price"):
+    if a.field.startswith("price") or a.unit == "index":
         tol = PRICE_TOLERANCE
     elif a.unit in MONEY_UNITS | PER_SHARE_UNITS:
         tol = FINANCIAL_TOLERANCE
@@ -156,9 +161,9 @@ def _bar_facts(ticker: str, bars: Series) -> list[Fact]:
     """把日线收盘转成 price_close 事实，用来和网页上的收盘价互相核对。"""
     i_close = bars.columns.index("close")
     return [
-        Fact(ticker, "price_close", r[0], float(r[i_close]), bars.unit, bars.source_url, r[0],
+        Fact(ticker, "price_close", r[0], float(r[i_close]), bars.unit, bars.source_at(i), r[0],
              bars.fetched_at, bars.via, note="取自日线")
-        for r in bars.rows
+        for i, r in enumerate(bars.rows)
     ]
 
 

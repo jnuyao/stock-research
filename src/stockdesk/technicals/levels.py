@@ -71,7 +71,8 @@ def levels(ticker: str, as_of: str, root: Path, market: str = "US",
 
     out: dict[str, Any] = {
         "currency": bars.unit,
-        "source": {"url": bars.source_url, "as_of": bars.as_of, "fetched_at": bars.fetched_at},
+        "source": {"url": bars.source_url, "as_of": bars.as_of, "fetched_at": bars.fetched_at,
+                   "ranges": bars.source_ranges()},
         "last_close": {"date": dates[-1], "value": closes[-1]},
         "weekly_close": weekly[-1] if weekly else None,
         "weekly_closes": weekly[-52:],

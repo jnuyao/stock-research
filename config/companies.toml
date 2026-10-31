@@ -24,4 +24,5 @@ report_currency = "USD"   # 财报是美元，股价是港元，估值时要换�
 eps_basis = "gaap"        # 联想不报经调整 EPS
 guidance = false
 consensus_critical = false
+fiscal_year_end = 3       # 财年到 3 月底，所以 2026 年 4–6 月是 FY2027Q1
 segments = { IDG = "智能设备（IDG）", ISG = "基础设施方案（ISG）", SSG = "方案服务（SSG）" }
